@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Indigo Atelier — Lead Agent</title>
+  <style>
+    :root {
+      --bg: #0a0a1a;
+      --surface: #12122a;
+      --border: #2a2a4a;
+      --text: #e0e0f0;
+      --muted: #8888aa;
+      --accent: #7c3aed;
+      --accent2: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius: 12px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 32px 0 24px;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header p { color: var(--muted); margin-top: 8px; font-size: 14px; }
+    .badge {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      color: var(--accent2);
+      margin-top: 12px;
+    }
+
+    /* Search Form */
+    .search-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .form-row.three { grid-template-columns: 1fr 1fr auto; }
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus { border-color: var(--accent); }
+
+    .lang-toggle {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      padding-bottom: 2px;
+    }
+    .lang-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .lang-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .btn {
+      padding: 12px 28px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #6d28d9);
+      color: white;
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-secondary {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--accent2); color: var(--accent2); }
+    .btn-small { padding: 8px 16px; font-size: 12px; }
+
+    .form-actions { display: flex; gap: 12px; align-items: center; }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* Results */
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .lead-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 12px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      transition: border-color 0.2s;
+    }
+    .lead-card:hover { border-color: var(--accent); }
+    .lead-info h3 { font-size: 16px; font-weight: 600; }
+    .lead-info p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .lead-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .tag {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .tag.source { color: var(--accent2); border-color: var(--accent2); }
+    .tag.email { color: var(--success); border-color: var(--success); }
+
+    /* Email Preview */
+    .email-preview {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-top: 16px;
+    }
+    .email-preview h4 { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+    .email-body {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      min-height: 100px;
+    }
+    .email-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    /* Drafts */
+    .draft-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 8px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .draft-item h4 { font-size: 14px; font-weight: 600; }
+    .draft-item p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* Loading / Empty */
+    .loading { text-align: center; padding: 40px; color: var(--muted); }
+    .empty { text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
+    .spinner {
+      display: inline-block;
+      width: 24px; height: 24px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 20px;
+      font-size: 13px;
+      color: var(--text);
+      z-index: 100;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: var(--success); }
+    .toast.error { border-color: var(--danger); }
+
+    /* API URL */
+    .api-url {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .api-url code {
+      background: var(--bg);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+      .form-row.three { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr; }
+      .lead-card { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>Indigo Atelier</h1>
+    <p>AI Lead Generation Agent — Find prospects, generate outreach, grow your business</p>
+    <div class="badge">● Agent Live</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-number" id="stat-leads">0</div>
+      <div class="stat-label">Leads Found</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="stat-emails">0</div>
+      <div class="stat-label">Emails Generated</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="stat-drafts">0</div>
+      <div class="stat-label">Drafts Saved</div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-card">
+    <div class="form-row">
+      <div>
+        <label>Business Type</label>
+        <input type="text" id="query" placeholder="restaurant, boulangerie, nail salon, cabinet dentaire..." />
+      </div>
+      <div>
+        <label>Location</label>
+        <select id="location">
+          <option value="Paris">Paris</option>
+          <option value="Lyon">Lyon</option>
+          <option value="Marseille">Marseille</option>
+          <option value="Bordeaux">Bordeaux</option>
+          <option value="Toulouse">Toulouse</option>
+          <option value="Nantes">Nantes</option>
+          <option value="Lille">Lille</option>
+          <option value="Strasbourg">Strasbourg</option>
+          <option value="Nice">Nice</option>
+          <option value="Montpellier">Montpellier</option>
+          <option value="London">London</option>
+          <option value="Manchester">Manchester</option>
+          <option value="Bristol">Bristol</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row three">
+      <div>
+        <label>Data Source</label>
+        <select id="source">
+          <option value="blitz">Blitz API (company + people)</option>
+          <option value="prospeo">Prospeo (verified emails)</option>
+        </select>
+      </div>
+      <div>
+        <label>Max Results</label>
+        <select id="max_results">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="25">25</option>
+        </select>
+      </div>
+      <div>
+        <label>Language</label>
+        <div class="lang-toggle">
+          <button class="lang-btn active" id="lang-fr" onclick="setLang('french')">FR</button>
+          <button class="lang-btn" id="lang-en" onclick="setLang('english')">EN</button>
+        </div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" id="search-btn" onclick="searchLeads()">
+        🔍 Find Leads
+      </button>
+      <span id="search-status" style="font-size:13px; color:var(--muted)"></span>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="results-section" style="display:none">
+    <div class="section-title">📋 Leads <span id="results-count" style="color:var(--muted); font-weight:400; font-size:14px"></span></div>
+    <div id="results-list"></div>
+  </div>
+
+  <!-- Email Preview -->
+  <div id="email-section" style="display:none" class="email-preview">
+    <h4>✉️ Email Draft — <span id="email-recipient"></span></h4>
+    <div class="email-body" id="email-body">
+      <div class="loading"><span class="spinner"></span>Generating email...</div>
+    </div>
+    <div class="email-actions">
+      <button class="btn btn-primary" onclick="saveDraft()">💾 Save Draft</button>
+      <button class="btn btn-secondary" onclick="copyEmail()">📋 Copy</button>
+      <button class="btn btn-secondary" onclick="closeEmail()">✕ Close</button>
+    </div>
+  </div>
+
+  <!-- Drafts -->
+  <div id="drafts-section" style="display:none; margin-top:32px">
+    <div class="section-title">📝 Saved Drafts</div>
+    <div id="drafts-list"></div>
+  </div>
+
+  <div class="api-url">
+    API: <code id="api-base">https://atelier-agent-virid.vercel.app</code>
+    <span style="margin-left:8px; cursor:pointer; color:var(--accent)" onclick="changeApiUrl()">⚙️ Change</span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // State
+  let lang = 'french';
+  let leads = [];
+  let currentLead = null;
+  let drafts = JSON.parse(localStorage.getItem('indigo_drafts') || '[]');
+  let apiBase = localStorage.getItem('indigo_api') || 'https://atelier-agent-virid.vercel.app';
+
+  // Init
+  document.getElementById('api-base').textContent = apiBase;
+  updateStats();
+  renderDrafts();
+
+  function setLang(l) {
+    lang = l;
+    document.getElementById('lang-fr').classList.toggle('active', l === 'french');
+    document.getElementById('lang-en').classList.toggle('active', l === 'english');
+  }
+
+  function changeApiUrl() {
+    const url = prompt('Enter API base URL:', apiBase);
+    if (url) {
+      apiBase = url.replace(/\/$/, '');
+      localStorage.setItem('indigo_api', apiBase);
+      document.getElementById('api-base').textContent = apiBase;
+      showToast('API URL updated', 'success');
+    }
+  }
+
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    setTimeout(() => t.className = 'toast', 3000);
+  }
+
+  function updateStats() {
+    document.getElementById('stat-leads').textContent = leads.length;
+    document.getElementById('stat-drafts').textContent = drafts.length;
+    const emails = drafts.length;
+    document.getElementById('stat-emails').textContent = emails;
+  }
+
+  // Search
+  async function searchLeads() {
+    const query = document.getElementById('query').value.trim();
+    if (!query) { showToast('Enter a business type', 'error'); return; }
+
+    const location = document.getElementById('location').value;
+    const source = document.getElementById('source').value;
+    const max = parseInt(document.getElementById('max_results').value);
+
+    const btn = document.getElementById('search-btn');
+    const status = document.getElementById('search-status');
+    btn.disabled = true;
+    status.innerHTML = '<span class="spinner"></span>Searching...';
+
+    try {
+      // Call the eve agent via its API
+      // The agent accepts natural language commands
+      const prompt = source === 'prospeo'
+        ? `Search for ${query} in ${location}. Use search_prospeo tool. Max ${max} results.`
+        : `Search for ${query} in ${location}. Use search_leads tool. Max ${max} results.`;
+
+      const resp = await fetch(`${apiBase}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: prompt }),
+      });
+
+      if (!resp.ok) throw new Error(`API error: ${resp.status}`);
+
+      const data = await resp.json();
+      // Parse leads from agent response
+      leads = parseLeadsFromResponse(data);
+      renderResults();
+      updateStats();
+      showToast(`Found ${leads.length} leads`, 'success');
+    } catch (err) {
+      // Fallback: generate mock leads for demo
+      showToast('Agent API not responding — showing demo data', 'error');
+      leads = generateDemoLeads(query, location, source, max);
+      renderResults();
+      updateStats();
+    }
+
+    btn.disabled = false;
+    status.textContent = '';
+  }
+
+  function parseLeadsFromResponse(data) {
+    // Try to extract leads from agent response
+    const text = data?.response || data?.message || data?.text || JSON.stringify(data);
+    const leads = [];
+
+    // Look for structured data in the response
+    try {
+      // Try JSON parse of the whole response
+      const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+      if (parsed?.leads) return parsed.leads;
+      if (Array.isArray(parsed)) return parsed;
+    } catch(e) {}
+
+    // Try to find JSON array in text
+    const jsonMatch = text.match(/\[[\s\S]*?\]/);
+    if (jsonMatch) {
+      try { return JSON.parse(jsonMatch[0]); } catch(e) {}
+    }
+
+    return [];
+  }
+
+  function generateDemoLeads(query, location, source, max) {
+    const companies = [
+      `${query} ${location} Centre`, `Le Petit ${query}`, `${query} Royal`,
+      `Maison ${query}`, `${location} ${query}`, `Chez ${query}`,
+      `${query} Moderne`, `${query} & Co`, `L'Atelier ${query}`, `${query} Express`
+    ];
+    const names = [
+      'Marie Dupont', 'Jean-Pierre Martin', 'Sophie Bernard', 'Pierre Leroy',
+      'Camille Moreau', 'Lucas Dubois', 'Emma Roux', 'Hugo Lambert',
+      'Chloé Bonnet', 'Thomas Mercier'
+    ];
+    return Array.from({ length: Math.min(max, companies.length) }, (_, i) => ({
+      name: names[i % names.length],
+      company: companies[i],
+      email: source === 'prospeo' ? `contact@${companies[i].toLowerCase().replace(/[^a-z]/g, '')}.fr` : null,
+      location,
+      source,
+      title: 'Owner',
+    }));
+  }
+
+  function renderResults() {
+    const section = document.getElementById('results-section');
+    const list = document.getElementById('results-list');
+    const count = document.getElementById('results-count');
+
+    if (leads.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = 'block';
+    count.textContent = `(${leads.length})`;
+
+    list.innerHTML = leads.map((lead, i) => `
+      <div class="lead-card">
+        <div class="lead-info">
+          <h3>${lead.name || 'Unknown'}</h3>
+          <p>${lead.company || 'Unknown company'} · ${lead.location}</p>
+          <div class="lead-meta">
+            <span class="tag source">${lead.source}</span>
+            ${lead.email ? `<span class="tag email">✉ ${lead.email}</span>` : ''}
+            ${lead.title ? `<span class="tag">${lead.title}</span>` : ''}
+          </div>
+        </div>
+        <div>
+          <button class="btn btn-primary btn-small" onclick="generateEmail(${i})">
+            ✉️ Email
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Email Generation
+  async function generateEmail(index) {
+    currentLead = leads[index];
+    document.getElementById('email-recipient').textContent = currentLead.company;
+    document.getElementById('email-body').innerHTML = '<div class="loading"><span class="spinner"></span>Generating personalized email...</div>';
+    document.getElementById('email-section').style.display = 'block';
+    document.getElementById('email-section').scrollIntoView({ behavior: 'smooth' });
+
+    const details = `${currentLead.company} in ${currentLead.location}. ${currentLead.title ? 'Contact: ' + currentLead.title + '.' : ''} ${currentLead.email ? 'Email: ' + currentLead.email : ''}`;
+
+    try {
+      const prompt = `Generate an outreach email for: ${currentLead.company}. Details: ${details}. Language: ${lang}. Contact name: ${currentLead.name || ''}.`;
+
+      const resp = await fetch(`${apiBase}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: prompt }),
+      });
+
+      if (!resp.ok) throw new Error(`API error: ${resp.status}`);
+
+      const data = await resp.json();
+      const email = extractEmailFromResponse(data, currentLead);
+      document.getElementById('email-body').textContent = email;
+    } catch (err) {
+      // Fallback: generate a template email
+      const email = generateTemplateEmail(currentLead, lang);
+      document.getElementById('email-body').textContent = email;
+    }
+  }
+
+  function extractEmailFromResponse(data, lead) {
+    const text = data?.response || data?.message || data?.text || data?.email || '';
+    if (text && text.length > 20) return text;
+    return generateTemplateEmail(lead, lang);
+  }
+
+  function generateTemplateEmail(lead, language) {
+    const name = lead.name || '';
+    const company = lead.company || '';
+    const greeting = name
+      ? (language === 'french' ? `Bonjour ${name.split(' ')[0]},` : `Hi ${name.split(' '')[0]},`)
+      : (language === 'french' ? 'Bonjour,' : 'Hi there,');
+
+    if (language === 'french') {
+      return `${greeting}
+
+Je me permets de vous contacter au sujet de ${company}. En tant qu'agence web spécialisée dans les PME françaises, nous aidons les entreprises comme la vôtre à renforcer leur présence en ligne.
+
+Nous offrons un audit SEO/AIO gratuit + un mockup personnalisé de votre site web, sans engagement.
+
+Seriez-vous disponible pour un échange de 15 minutes cette semaine ?
+
+Bien cordialement,
+Indigo S / Atelier
+https://artful-launchpad-hub.lovable.app`;
+    }
+    return `${greeting}
+
+I'm reaching out about ${company}. As a web agency specializing in small businesses, we help companies like yours strengthen their online presence.
+
+We're offering a free SEO/AIO audit + personalized website mockup, no strings attached.
+
+Would you be open to a 15-minute chat this week?
+
+Best regards,
+Indigo S / Atelier
+https://artful-launchpad-hub.lovable.app`;
+  }
+
+  function closeEmail() {
+    document.getElementById('email-section').style.display = 'none';
+    currentLead = null;
+  }
+
+  function copyEmail() {
+    const text = document.getElementById('email-body').textContent;
+    navigator.clipboard.writeText(text);
+    showToast('Copied to clipboard', 'success');
+  }
+
+  // Drafts
+  function saveDraft() {
+    if (!currentLead) return;
+    const email = document.getElementById('email-body').textContent;
+    const draft = {
+      id: Date.now(),
+      business: currentLead.company,
+      contact: currentLead.name,
+      email: currentLead.email,
+      location: currentLead.location,
+      source: currentLead.source,
+      body: email,
+      lang,
+      saved: new Date().toISOString(),
+    };
+    drafts.unshift(draft);
+    localStorage.setItem('indigo_drafts', JSON.stringify(drafts));
+    updateStats();
+    renderDrafts();
+    showToast('Draft saved ✓', 'success');
+  }
+
+  function renderDrafts() {
+    const section = document.getElementById('drafts-section');
+    const list = document.getElementById('drafts-list');
+
+    if (drafts.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = 'block';
+    list.innerHTML = drafts.map(d => `
+      <div class="draft-item">
+        <div>
+          <h4>${d.business} <span style="font-weight:400; color:var(--muted)">· ${d.location}</span></h4>
+          <p>${d.contact || 'No contact'} · ${d.source} · ${new Date(d.saved).toLocaleDateString()}</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary btn-small" onclick="viewDraft(${d.id})">👁 View</button>
+          <button class="btn btn-secondary btn-small" onclick="deleteDraft(${d.id})">🗑</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function viewDraft(id) {
+    const d = drafts.find(x => x.id === id);
+    if (!d) return;
+    currentLead = { name: d.contact, company: d.business, email: d.email, location: d.location, source: d.source };
+    document.getElementById('email-recipient').textContent = d.business;
+    document.getElementById('email-body').textContent = d.body;
+    document.getElementById('email-section').style.display = 'block';
+    document.getElementById('email-section').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function deleteDraft(id) {
+    drafts = drafts.filter(x => x.id !== id);
+    localStorage.setItem('indigo_drafts', JSON.stringify(drafts));
+    updateStats();
+    renderDrafts();
+    showToast('Draft deleted', '');
+  }
+</script>
+</body>
+</html>

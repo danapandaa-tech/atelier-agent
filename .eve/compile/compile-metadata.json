@@ -1,0 +1,30 @@
+{
+  "compile": {
+    "moduleMap": {
+      "path": ".eve/compile/module-map.mjs",
+      "sha256": "cc71145c7735ca02943e23e50ab7a65c5cebc3346b42c12c22578e03b1a33be4"
+    }
+  },
+  "discovery": {
+    "diagnostics": {
+      "path": ".eve/discovery/diagnostics.json",
+      "sha256": "b26fc8e66ee943f962b1bab4a790f6a611ce7e6738aa29f83ea53b73cc362c63"
+    },
+    "manifest": {
+      "path": ".eve/discovery/agent-discovery-manifest.json",
+      "sha256": "a91412f90b78ab5e29b9d33e6550b63111c86cbcc0402196e09ac89876816148"
+    },
+    "sourceGraphHash": "54483c21543f5a0cb6c0a8a44474b1d8a23fe877d469b06b91b4df08b15a385a",
+    "summary": {
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  "generator": {
+    "name": "eve",
+    "version": "0.11.10"
+  },
+  "kind": "eve-compile-metadata",
+  "status": "ready",
+  "version": 5
+}

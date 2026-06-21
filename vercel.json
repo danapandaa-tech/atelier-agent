@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "buildCommand": "npx eve build",
+  "outputDirectory": ".eve",
+  "framework": null
+}
