@@ -1,1 +1,9 @@
+node_modules
+.output
+.eve
 .vercel
+.env
+.env.local
+*.log
+.DS_Store
+Thumbs.db
