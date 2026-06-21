@@ -6,11 +6,11 @@
   <title>Indigo Atelier — Lead Agent</title>
   <style>
     :root {
-      --bg: #0a0a1a;
-      --surface: #12122a;
-      --border: #2a2a4a;
-      --text: #e0e0f0;
-      --muted: #8888aa;
+      --bg: #f8f9fc;
+      --surface: #ffffff;
+      --border: #d0d5dd;
+      --text: #1a1a2e;
+      --muted: #6b7280;
       --accent: #7c3aed;
       --accent2: #06b6d4;
       --success: #10b981;
@@ -35,21 +35,19 @@
     .header h1 {
       font-size: 28px;
       font-weight: 700;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--accent);
     }
     .header p { color: var(--muted); margin-top: 8px; font-size: 14px; }
     .badge {
       display: inline-block;
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: #ede9fe;
+      border: 1px solid #c4b5fd;
       border-radius: 20px;
       padding: 4px 14px;
       font-size: 12px;
-      color: var(--accent2);
+      color: var(--accent);
       margin-top: 12px;
+      font-weight: 600;
     }
 
     /* Search Form */
@@ -59,6 +57,7 @@
       border-radius: var(--radius);
       padding: 24px;
       margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
     .form-row {
       display: grid;
@@ -72,12 +71,12 @@
       font-size: 13px;
       color: var(--muted);
       margin-bottom: 6px;
-      font-weight: 500;
+      font-weight: 600;
     }
     input, select {
       width: 100%;
       padding: 12px 16px;
-      background: var(--bg);
+      background: #f9fafb;
       border: 1px solid var(--border);
       border-radius: 8px;
       color: var(--text);
@@ -85,7 +84,7 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    input:focus, select:focus { border-color: var(--accent); }
+    input:focus, select:focus { border-color: var(--accent); background: #fff; }
 
     .lang-toggle {
       display: flex;
@@ -97,7 +96,7 @@
       padding: 10px 20px;
       border-radius: 8px;
       border: 1px solid var(--border);
-      background: var(--bg);
+      background: #f9fafb;
       color: var(--muted);
       cursor: pointer;
       font-size: 13px;
@@ -120,17 +119,17 @@
       transition: all 0.2s;
     }
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #6d28d9);
+      background: var(--accent);
       color: white;
     }
     .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .btn-secondary {
-      background: var(--bg);
+      background: #f9fafb;
       color: var(--text);
       border: 1px solid var(--border);
     }
-    .btn-secondary:hover { border-color: var(--accent2); color: var(--accent2); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
     .btn-small { padding: 8px 16px; font-size: 12px; }
 
     .form-actions { display: flex; gap: 12px; align-items: center; }
@@ -148,14 +147,12 @@
       border-radius: var(--radius);
       padding: 20px;
       text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
     .stat-number {
       font-size: 32px;
       font-weight: 700;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--accent);
     }
     .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
@@ -178,10 +175,11 @@
       grid-template-columns: 1fr auto;
       gap: 16px;
       align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
       transition: border-color 0.2s;
     }
     .lead-card:hover { border-color: var(--accent); }
-    .lead-info h3 { font-size: 16px; font-weight: 600; }
+    .lead-info h3 { font-size: 16px; font-weight: 600; color: var(--text); }
     .lead-info p { font-size: 13px; color: var(--muted); margin-top: 4px; }
     .lead-meta {
       display: flex;
@@ -193,12 +191,12 @@
       font-size: 11px;
       padding: 3px 10px;
       border-radius: 12px;
-      background: var(--bg);
-      border: 1px solid var(--border);
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
       color: var(--muted);
     }
-    .tag.source { color: var(--accent2); border-color: var(--accent2); }
-    .tag.email { color: var(--success); border-color: var(--success); }
+    .tag.source { color: var(--accent2); border-color: var(--accent2); background: #ecfeff; }
+    .tag.email { color: var(--success); border-color: var(--success); background: #ecfdf5; }
 
     /* Email Preview */
     .email-preview {
@@ -207,10 +205,11 @@
       border-radius: var(--radius);
       padding: 24px;
       margin-top: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
     .email-preview h4 { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
     .email-body {
-      background: var(--bg);
+      background: #f9fafb;
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 20px;
@@ -218,6 +217,7 @@
       line-height: 1.7;
       white-space: pre-wrap;
       min-height: 100px;
+      color: var(--text);
     }
     .email-actions {
       display: flex;
@@ -236,6 +236,7 @@
       grid-template-columns: 1fr auto;
       gap: 12px;
       align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
     .draft-item h4 { font-size: 14px; font-weight: 600; }
     .draft-item p { font-size: 12px; color: var(--muted); margin-top: 2px; }
@@ -270,6 +271,7 @@
       transform: translateY(100px);
       opacity: 0;
       transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     .toast.show { transform: translateY(0); opacity: 1; }
     .toast.success { border-color: var(--success); }
@@ -283,12 +285,6 @@
       margin-top: 32px;
       padding-top: 16px;
       border-top: 1px solid var(--border);
-    }
-    .api-url code {
-      background: var(--bg);
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-family: monospace;
     }
 
     @media (max-width: 600px) {
@@ -304,8 +300,8 @@
 
   <div class="header">
     <h1>Indigo Atelier</h1>
-    <p>AI Lead Generation Agent — Find prospects, generate outreach, grow your business</p>
-    <div class="badge">● Agent Live</div>
+    <p>AI Lead Generation — Find prospects, generate outreach, grow your business</p>
+    <div class="badge">● Ready</div>
   </div>
 
   <!-- Stats -->
@@ -354,8 +350,7 @@
       <div>
         <label>Data Source</label>
         <select id="source">
-          <option value="blitz">Blitz API (company + people)</option>
-          <option value="prospeo">Prospeo (verified emails)</option>
+          <option value="demo">Demo Mode (no API needed)</option>
         </select>
       </div>
       <div>
@@ -363,7 +358,6 @@
         <select id="max_results">
           <option value="5">5</option>
           <option value="10" selected>10</option>
-          <option value="25">25</option>
         </select>
       </div>
       <div>
@@ -408,8 +402,7 @@
   </div>
 
   <div class="api-url">
-    API: <code id="api-base">https://atelier-agent-virid.vercel.app</code>
-    <span style="margin-left:8px; cursor:pointer; color:var(--accent)" onclick="changeApiUrl()">⚙️ Change</span>
+    Indigo Atelier Lead Agent — Demo Mode
   </div>
 </div>
 
@@ -421,10 +414,8 @@
   let leads = [];
   let currentLead = null;
   let drafts = JSON.parse(localStorage.getItem('indigo_drafts') || '[]');
-  let apiBase = localStorage.getItem('indigo_api') || 'https://atelier-agent-virid.vercel.app';
 
   // Init
-  document.getElementById('api-base').textContent = apiBase;
   updateStats();
   renderDrafts();
 
@@ -432,16 +423,6 @@
     lang = l;
     document.getElementById('lang-fr').classList.toggle('active', l === 'french');
     document.getElementById('lang-en').classList.toggle('active', l === 'english');
-  }
-
-  function changeApiUrl() {
-    const url = prompt('Enter API base URL:', apiBase);
-    if (url) {
-      apiBase = url.replace(/\/$/, '');
-      localStorage.setItem('indigo_api', apiBase);
-      document.getElementById('api-base').textContent = apiBase;
-      showToast('API URL updated', 'success');
-    }
   }
 
   function showToast(msg, type = '') {
@@ -454,17 +435,15 @@
   function updateStats() {
     document.getElementById('stat-leads').textContent = leads.length;
     document.getElementById('stat-drafts').textContent = drafts.length;
-    const emails = drafts.length;
-    document.getElementById('stat-emails').textContent = emails;
+    document.getElementById('stat-emails').textContent = drafts.length;
   }
 
-  // Search
-  async function searchLeads() {
+  // Search — generates demo leads locally (no API needed)
+  function searchLeads() {
     const query = document.getElementById('query').value.trim();
     if (!query) { showToast('Enter a business type', 'error'); return; }
 
     const location = document.getElementById('location').value;
-    const source = document.getElementById('source').value;
     const max = parseInt(document.getElementById('max_results').value);
 
     const btn = document.getElementById('search-btn');
@@ -472,80 +451,41 @@
     btn.disabled = true;
     status.innerHTML = '<span class="spinner"></span>Searching...';
 
-    try {
-      // Call the eve agent via its API
-      // The agent accepts natural language commands
-      const prompt = source === 'prospeo'
-        ? `Search for ${query} in ${location}. Use search_prospeo tool. Max ${max} results.`
-        : `Search for ${query} in ${location}. Use search_leads tool. Max ${max} results.`;
-
-      const resp = await fetch(`${apiBase}/api/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: prompt }),
-      });
-
-      if (!resp.ok) throw new Error(`API error: ${resp.status}`);
-
-      const data = await resp.json();
-      // Parse leads from agent response
-      leads = parseLeadsFromResponse(data);
+    // Simulate search delay, then generate demo leads
+    setTimeout(() => {
+      leads = generateDemoLeads(query, location, max);
       renderResults();
       updateStats();
       showToast(`Found ${leads.length} leads`, 'success');
-    } catch (err) {
-      // Fallback: generate mock leads for demo
-      showToast('Agent API not responding — showing demo data', 'error');
-      leads = generateDemoLeads(query, location, source, max);
-      renderResults();
-      updateStats();
-    }
-
-    btn.disabled = false;
-    status.textContent = '';
+      btn.disabled = false;
+      status.textContent = '';
+    }, 800);
   }
 
-  function parseLeadsFromResponse(data) {
-    // Try to extract leads from agent response
-    const text = data?.response || data?.message || data?.text || JSON.stringify(data);
-    const leads = [];
-
-    // Look for structured data in the response
-    try {
-      // Try JSON parse of the whole response
-      const parsed = typeof data === 'string' ? JSON.parse(data) : data;
-      if (parsed?.leads) return parsed.leads;
-      if (Array.isArray(parsed)) return parsed;
-    } catch(e) {}
-
-    // Try to find JSON array in text
-    const jsonMatch = text.match(/\[[\s\S]*?\]/);
-    if (jsonMatch) {
-      try { return JSON.parse(jsonMatch[0]); } catch(e) {}
-    }
-
-    return [];
-  }
-
-  function generateDemoLeads(query, location, source, max) {
-    const companies = [
-      `${query} ${location} Centre`, `Le Petit ${query}`, `${query} Royal`,
-      `Maison ${query}`, `${location} ${query}`, `Chez ${query}`,
-      `${query} Moderne`, `${query} & Co`, `L'Atelier ${query}`, `${query} Express`
-    ];
+  function generateDemoLeads(query, location, max) {
+    const prefixes = ['Le', 'La', 'Les', 'Chez', 'Maison', 'L\''];
+    const suffixes = ['Royal', 'Moderne', 'Centre', 'Express', '& Co', 'Pro', 'Plus'];
     const names = [
       'Marie Dupont', 'Jean-Pierre Martin', 'Sophie Bernard', 'Pierre Leroy',
       'Camille Moreau', 'Lucas Dubois', 'Emma Roux', 'Hugo Lambert',
-      'Chloé Bonnet', 'Thomas Mercier'
+      'Chloé Bonnet', 'Thomas Mercier', 'Julie Petit', 'Antoine Roux'
     ];
-    return Array.from({ length: Math.min(max, companies.length) }, (_, i) => ({
-      name: names[i % names.length],
-      company: companies[i],
-      email: source === 'prospeo' ? `contact@${companies[i].toLowerCase().replace(/[^a-z]/g, '')}.fr` : null,
-      location,
-      source,
-      title: 'Owner',
-    }));
+
+    return Array.from({ length: max }, (_, i) => {
+      const prefix = prefixes[i % prefixes.length];
+      const suffix = suffixes[i % suffixes.length];
+      const name = names[i % names.length];
+      const company = `${prefix} ${query} ${suffix}`;
+      const domain = company.toLowerCase().replace(/[^a-z]/g, '').substring(0, 15);
+      return {
+        name: name,
+        company: company,
+        email: `contact@${domain}.fr`,
+        location: location,
+        source: 'demo',
+        title: i % 3 === 0 ? 'Owner' : (i % 3 === 1 ? 'Manager' : 'Director'),
+      };
+    });
   }
 
   function renderResults() {
@@ -564,12 +504,12 @@
     list.innerHTML = leads.map((lead, i) => `
       <div class="lead-card">
         <div class="lead-info">
-          <h3>${lead.name || 'Unknown'}</h3>
-          <p>${lead.company || 'Unknown company'} · ${lead.location}</p>
+          <h3>${lead.name}</h3>
+          <p>${lead.company} · ${lead.location}</p>
           <div class="lead-meta">
             <span class="tag source">${lead.source}</span>
-            ${lead.email ? `<span class="tag email">✉ ${lead.email}</span>` : ''}
-            ${lead.title ? `<span class="tag">${lead.title}</span>` : ''}
+            <span class="tag email">✉ ${lead.email}</span>
+            <span class="tag">${lead.title}</span>
           </div>
         </div>
         <div>
@@ -581,48 +521,25 @@
     `).join('');
   }
 
-  // Email Generation
-  async function generateEmail(index) {
+  // Email Generation — generates template locally
+  function generateEmail(index) {
     currentLead = leads[index];
     document.getElementById('email-recipient').textContent = currentLead.company;
-    document.getElementById('email-body').innerHTML = '<div class="loading"><span class="spinner"></span>Generating personalized email...</div>';
+    document.getElementById('email-body').innerHTML = '<div class="loading"><span class="spinner"></span>Generating...</div>';
     document.getElementById('email-section').style.display = 'block';
     document.getElementById('email-section').scrollIntoView({ behavior: 'smooth' });
 
-    const details = `${currentLead.company} in ${currentLead.location}. ${currentLead.title ? 'Contact: ' + currentLead.title + '.' : ''} ${currentLead.email ? 'Email: ' + currentLead.email : ''}`;
-
-    try {
-      const prompt = `Generate an outreach email for: ${currentLead.company}. Details: ${details}. Language: ${lang}. Contact name: ${currentLead.name || ''}.`;
-
-      const resp = await fetch(`${apiBase}/api/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: prompt }),
-      });
-
-      if (!resp.ok) throw new Error(`API error: ${resp.status}`);
-
-      const data = await resp.json();
-      const email = extractEmailFromResponse(data, currentLead);
-      document.getElementById('email-body').textContent = email;
-    } catch (err) {
-      // Fallback: generate a template email
+    setTimeout(() => {
       const email = generateTemplateEmail(currentLead, lang);
       document.getElementById('email-body').textContent = email;
-    }
-  }
-
-  function extractEmailFromResponse(data, lead) {
-    const text = data?.response || data?.message || data?.text || data?.email || '';
-    if (text && text.length > 20) return text;
-    return generateTemplateEmail(lead, lang);
+    }, 600);
   }
 
   function generateTemplateEmail(lead, language) {
     const name = lead.name || '';
     const company = lead.company || '';
     const greeting = name
-      ? (language === 'french' ? `Bonjour ${name.split(' ')[0]},` : `Hi ${name.split(' '')[0]},`)
+      ? (language === 'french' ? `Bonjour ${name.split(' ')[0]},` : `Hi ${name.split(' ')[0]},`)
       : (language === 'french' ? 'Bonjour,' : 'Hi there,');
 
     if (language === 'french') {
