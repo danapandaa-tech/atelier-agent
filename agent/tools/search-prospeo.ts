@@ -15,7 +15,8 @@ export default defineTool({
     const query = input.query as string;
     const location = input.location as string;
     const max_results = Math.min((input.max_results as number) || 5, 25);
-    const PROSPEO_KEY = process.env.PROSPEO_API_KEY || "pk_63ecd04c486d350417661f2cc2f5a398b529ec91e3dbc46f4d6ab00d918c4144";
+    const PROSPEO_KEY = process.env.PROSPEO_API_KEY;
+    if (!PROSPEO_KEY) return { error: "PROSPEO_API_KEY not set", leads: [], count: 0 };
 
     try {
       const resp = await fetch("https://api.prospeo.io/search-person", {

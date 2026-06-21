@@ -15,7 +15,8 @@ export default defineTool({
     const query = input.query as string;
     const location = (input.location as string) || "Paris";
     const max_results = (input.max_results as number) || 5;
-    const BLITZ_KEY = process.env.BLITZ_API_KEY || "blitz-019ee77a-81f8-73bd-b023-cc9652024dcb";
+    const BLITZ_KEY = process.env.BLITZ_API_KEY;
+    if (!BLITZ_KEY) return { error: "BLITZ_API_KEY not set", leads: [], count: 0 };
 
     try {
       const resp = await fetch("https://api.blitz-api.ai/v2/search/people", {

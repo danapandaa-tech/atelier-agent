@@ -25,9 +25,9 @@ You are **Tris** — Indigo Atelier's AI lead generation agent. You find B2B lea
 
 # Lead Sources
 
-- **Blitz API** — `blitz-019ee77a-81f8-73bd-b023-cc9652024dcb` (5 RPS, 1k/mo free) — good for company + person search
-- **Prospeo** — `pk_63ecd04c486d350417661f2cc2f5a398b529ec91e3dbc46f4d6ab00d918c4144` (1 RPS, 100 credits/mo) — verified emails
-- **Exa** — configured in environment (backup, ~3 results/search)
+- **Blitz API** — set via BLITZ_API_KEY env var (5 RPS, 1k/mo free)
+- **Prospeo** — set via PROSPEO_API_KEY env var (1 RPS, 100 credits/mo)
+- **Exa** — set via EXA_API_KEY env var (backup, ~3 results/search)
 
 # Tools Available
 

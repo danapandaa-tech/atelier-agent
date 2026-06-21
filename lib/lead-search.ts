@@ -26,9 +26,9 @@ export interface Lead {
   details: string;
 }
 
-const blitz = new BlitzAPI(process.env.BLITZ_API_KEY || "blitz-019ee77a-81f8-73bd-b023-cc9652024dcb");
-const prospeo = new ProspeoAPI(process.env.PROSPEO_API_KEY || "pk_63ecd04c486d350417661f2cc2f5a398b529ec91e3dbc46f4d6ab00d918c4144");
-const exa = new ExaAPI(process.env.EXA_API_KEY || "47a504ab-feb4-434f-bda0-b356232cc287");
+const blitz = new BlitzAPI(process.env.BLITZ_API_KEY || "");
+const prospeo = new ProspeoAPI(process.env.PROSPEO_API_KEY || "");
+const exa = new ExaAPI(process.env.EXA_API_KEY || "");
 
 export const leadSearch = {
   async search(params: SearchParams): Promise<Lead[]> {
