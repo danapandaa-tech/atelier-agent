@@ -1,8 +1,26 @@
 import { defineAgent } from "eve";
+import { generateText } from "ai";
+import { createOpenRouter } from "@ai-sdk/openrouter";
+
+const openrouter = createOpenRouter({ 
+  apiKey: process.env.OPENROUTER_API_KEY 
+});
 
 export default defineAgent({
-  // Vercel AI Gateway — $5 free credits every 30 days (refreshes monthly)
-  // deepseek-v4-flash: ~$0.20/1M input tokens → $5 = ~25M tokens
-  // For lead search + email gen, this is plenty for a free product
-  model: "deepseek/deepseek-v4-flash",
+  // Use OpenRouter free model as primary (works 24/7)
+  model: "google/gemma-4-31b-it:free",
+  
+  // System prompt for when Hermes is offline
+  system: `You are Tris, Indigo Atelier's AI assistant. You are running on EVE (Vercel cloud) because Hermes (the main local brain) is currently offline.
+
+Your capabilities:
+- Quick replies and basic questions
+- Lead search (use web_search)
+- Email drafting
+- Opportunity scanning
+- Portfolio and CV help
+
+When Hermes comes back online, you'll automatically forward complex tasks to it.
+
+Be helpful, concise, and professional. Sign as "Indigo S / Atelier".`,
 });
