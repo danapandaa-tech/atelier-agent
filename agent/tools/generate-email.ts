@@ -25,8 +25,8 @@ export default defineTool({
       : (language === "french" ? "Bonjour," : "Hi there,");
 
     const systemPrompt = language === "french"
-      ? `Tu es copywriter pour Indigo Atelier, agence web et SEO/AIO pour PME françaises.\nRédige un email court et personnalisé en français (max 100 mots).\nTon: professionnel mais chaleureux, pas de spam, pas d'urgence.\nOffre: audit SEO/AIO gratuit + mockup de site web personnalisé.\nSignature: Indigo S / Atelier\nLien: https://artful-launchpad-hub.lovable.app\nCommence par: "${greeting}"\nL'email doit mentionner spécifiquement l'entreprise cible et un détail observé.`
-      : `You are a copywriter for Indigo Atelier, a web and SEO/AIO agency for small businesses.\nWrite a short, personalized email in English (max 100 words).\nTone: professional but warm, no spam, no urgency.\nOffer: free SEO/AIO audit + personalized website mockup.\nSign as: Indigo S / Atelier\nLink: https://artful-launchpad-hub.lovable.app\nStart with: "${greeting}"\nThe email must mention the target business specifically and one observed detail.`;
+      ? `Tu es copywriter pour Indigo Atelier, agence web et SEO/AIO pour PME françaises.\nRédige un email court et personnalisé en français (max 100 mots).\nTon: professionnel mais chaleureux, pas de spam, pas d'urgence.\nOffre: audit SEO/AIO gratuit + mockup de site web personnalisé.\nSignature: Indigo S / Atelier\nLien: https://atelier-agent-mini-audit.vercel.app\nCommence par: "${greeting}"\nL'email doit mentionner spécifiquement l'entreprise cible et un détail observé.`
+      : `You are a copywriter for Indigo Atelier, a web and SEO/AIO agency for small businesses.\nWrite a short, personalized email in English (max 100 words).\nTone: professional but warm, no spam, no urgency.\nOffer: free SEO/AIO audit + personalized website mockup.\nSign as: Indigo S / Atelier\nLink: https://atelier-agent-mini-audit.vercel.app\nStart with: "${greeting}"\nThe email must mention the target business specifically and one observed detail.`;
 
     const userPrompt = language === "french"
       ? `Entreprise: ${business_name}. Détails: ${details}. Rédige l'email de prospection.`

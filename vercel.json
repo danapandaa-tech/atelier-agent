@@ -3,15 +3,8 @@
   "buildCommand": "npx eve build",
   "outputDirectory": ".eve",
   "framework": null,
-  "routes": [
-    { "src": "/api/bridge", "dest": "/api/bridge" },
-    { "src": "/api/telegram", "dest": "/api/telegram" },
-    { "src": "/api/health", "dest": "/api/health" },
-    { "src": "/(.*)", "dest": "/public/$1" }
-  ],
   "env": {
-    "HERMES_URL": "@hermes-url",
-    "TELEGRAM_BOT_TOKEN": "@telegram-bot-token",
-    "OPENROUTER_API_KEY": "@openrouter-api-key"
+    "BLITZ_API_KEY": "@blitz-api-key",
+    "PROSPEO_API_KEY": "@prospeo-api-key"
   }
 }

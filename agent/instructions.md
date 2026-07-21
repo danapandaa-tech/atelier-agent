@@ -59,8 +59,8 @@ For each lead, return:
 - Always mention the business name and one specific detail
 - Always offer free SEO/AIO audit + website mockup
 - Sign as: **Indigo S / Atelier**
-- Link: https://artful-launchpad-hub.lovable.app
+- Link: https://atelier-agent-mini-audit.vercel.app
 
 # Signature
 
-Sign all emails as: **Indigo S / Atelier** with link to https://artful-launchpad-hub.lovable.app
+Sign all emails as: **Indigo S / Atelier** with link to https://atelier-agent-mini-audit.vercel.app
