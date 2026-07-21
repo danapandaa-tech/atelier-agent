@@ -17,49 +17,49 @@ var health_default = health_default$1;
 //#endregion
 //#region #eve-route/eve/v1/info
 var info_default = async (event) => handleAgentInfoRequest({
-	"appRoot": "C:\\Users\\danap\\IndigoAtelier\\atelier-agent",
+	"appRoot": "C:\\Users\\danap\\atelier-agent",
 	"dev": false,
 	"mode": "production"
 }, event.req);
 //#endregion
 //#region #nitro/virtual/eve-channel/GET /eve/v1/connections/:name/callback/:token
 const config$5 = {
-	"appRoot": "C:\\Users\\danap\\IndigoAtelier\\atelier-agent",
+	"appRoot": "C:\\Users\\danap\\atelier-agent",
 	"dev": false
 };
 var _token_default$2 = (event) => dispatchChannelRequest(event, "GET /eve/v1/connections/:name/callback/:token", config$5);
 //#endregion
 //#region #nitro/virtual/eve-channel/POST /eve/v1/connections/:name/callback/:token
 const config$4 = {
-	"appRoot": "C:\\Users\\danap\\IndigoAtelier\\atelier-agent",
+	"appRoot": "C:\\Users\\danap\\atelier-agent",
 	"dev": false
 };
 var _token_default$1 = (event) => dispatchChannelRequest(event, "POST /eve/v1/connections/:name/callback/:token", config$4);
 //#endregion
 //#region #nitro/virtual/eve-channel/POST /eve/v1/callback/:token
 const config$3 = {
-	"appRoot": "C:\\Users\\danap\\IndigoAtelier\\atelier-agent",
+	"appRoot": "C:\\Users\\danap\\atelier-agent",
 	"dev": false
 };
 var _token_default = (event) => dispatchChannelRequest(event, "POST /eve/v1/callback/:token", config$3);
 //#endregion
 //#region #nitro/virtual/eve-channel/POST /eve/v1/session
 const config$2 = {
-	"appRoot": "C:\\Users\\danap\\IndigoAtelier\\atelier-agent",
+	"appRoot": "C:\\Users\\danap\\atelier-agent",
 	"dev": false
 };
 var session_default = (event) => dispatchChannelRequest(event, "POST /eve/v1/session", config$2);
 //#endregion
 //#region #nitro/virtual/eve-channel/POST /eve/v1/session/:sessionId
 const config$1 = {
-	"appRoot": "C:\\Users\\danap\\IndigoAtelier\\atelier-agent",
+	"appRoot": "C:\\Users\\danap\\atelier-agent",
 	"dev": false
 };
 var _sessionId_default = (event) => dispatchChannelRequest(event, "POST /eve/v1/session/:sessionId", config$1);
 //#endregion
 //#region #nitro/virtual/eve-channel/GET /eve/v1/session/:sessionId/stream
 const config = {
-	"appRoot": "C:\\Users\\danap\\IndigoAtelier\\atelier-agent",
+	"appRoot": "C:\\Users\\danap\\atelier-agent",
 	"dev": false
 };
 var stream_default = (event) => dispatchChannelRequest(event, "GET /eve/v1/session/:sessionId/stream", config);
@@ -70,7 +70,127 @@ var workflows_handler_default = async ({ req }) => {
 };
 //#endregion
 //#region #nitro/virtual/public-assets-data
-var public_assets_data_default = {};
+var public_assets_data_default = {
+	"/audit-le-petit-bistrot-EN.pdf": {
+		"type": "application/pdf",
+		"etag": "\"1966-tj1WSoXC8I0wLC+k+VQbrbXSAtg\"",
+		"mtime": "2026-07-21T08:12:09.271Z",
+		"size": 6502,
+		"path": "../public/audit-le-petit-bistrot-EN.pdf"
+	},
+	"/portfolio.html": {
+		"type": "text/html; charset=utf-8",
+		"etag": "\"1421-FdcDHwOYvHXu1y/JRQOsFTR7VAs\"",
+		"mtime": "2026-07-21T08:12:09.272Z",
+		"size": 5153,
+		"path": "../public/portfolio.html"
+	},
+	"/audit-le-petit-bistrot-FR.pdf": {
+		"type": "application/pdf",
+		"etag": "\"1a06-bft+tR0tUDFZgMh2IvbUOAHhlnw\"",
+		"mtime": "2026-07-21T08:12:09.271Z",
+		"size": 6662,
+		"path": "../public/audit-le-petit-bistrot-FR.pdf"
+	},
+	"/index.html": {
+		"type": "text/html; charset=utf-8",
+		"etag": "\"510c-OgHIYkti5e2QTqjtLyS+bXTazFQ\"",
+		"mtime": "2026-07-21T08:12:09.272Z",
+		"size": 20748,
+		"path": "../public/index.html"
+	},
+	"/style.css": {
+		"type": "text/css; charset=utf-8",
+		"etag": "\"e5d-wto90jmW9bejsa7P9i2NMWeMETU\"",
+		"mtime": "2026-07-21T08:12:09.272Z",
+		"size": 3677,
+		"path": "../public/style.css"
+	},
+	"/Mockups/Baluserv.png": {
+		"type": "image/png",
+		"etag": "\"a192-N9I5of4zwvduSFQHbjDIh5c4LzA\"",
+		"mtime": "2026-07-21T08:12:09.263Z",
+		"size": 41362,
+		"path": "../public/Mockups/Baluserv.png"
+	},
+	"/Mockups/Anda_Lazarov_Academy.png": {
+		"type": "image/png",
+		"etag": "\"a7c8-lHLcZPHzyC8215yrw9tsciR/87Q\"",
+		"mtime": "2026-07-21T08:12:09.262Z",
+		"size": 42952,
+		"path": "../public/Mockups/Anda_Lazarov_Academy.png"
+	},
+	"/Mockups/Biotiful.png": {
+		"type": "image/png",
+		"etag": "\"8d01-TjVWfP76t17YT8Sg165qRehbxcM\"",
+		"mtime": "2026-07-21T08:12:09.265Z",
+		"size": 36097,
+		"path": "../public/Mockups/Biotiful.png"
+	},
+	"/Mockups/Herman_Arad.png": {
+		"type": "image/png",
+		"etag": "\"8d91-vio0s4Sgea9j8Yo4PJWXZCoInyI\"",
+		"mtime": "2026-07-21T08:12:09.266Z",
+		"size": 36241,
+		"path": "../public/Mockups/Herman_Arad.png"
+	},
+	"/Mockups/KEO_Cosmetic_Studio.png": {
+		"type": "image/png",
+		"etag": "\"a6d8-t/uZ7Yq7Mnct9qVfY+DW//2tj/0\"",
+		"mtime": "2026-07-21T08:12:09.267Z",
+		"size": 42712,
+		"path": "../public/Mockups/KEO_Cosmetic_Studio.png"
+	},
+	"/Mockups/Kineto_Sport_MRC___BeFit_Smile.png": {
+		"type": "image/png",
+		"etag": "\"b096-m3+qKJM7I0laUkkHZG3hkNdYG6g\"",
+		"mtime": "2026-07-21T08:12:09.268Z",
+		"size": 45206,
+		"path": "../public/Mockups/Kineto_Sport_MRC___BeFit_Smile.png"
+	},
+	"/Mockups/Geanina_Craciun_Beauty_Clinic___Aca.png": {
+		"type": "image/png",
+		"etag": "\"9a4e-yltAcu+G53y2u4G0iQczFVDm53s\"",
+		"mtime": "2026-07-21T08:12:09.266Z",
+		"size": 39502,
+		"path": "../public/Mockups/Geanina_Craciun_Beauty_Clinic___Aca.png"
+	},
+	"/Mockups/L__bu__e_Fericite.png": {
+		"type": "image/png",
+		"etag": "\"9e3a-CziykCmW0RVV95t0IZ51aYRuC5Y\"",
+		"mtime": "2026-07-21T08:12:09.268Z",
+		"size": 40506,
+		"path": "../public/Mockups/L__bu__e_Fericite.png"
+	},
+	"/Mockups/Pure_Pilates_Studio.png": {
+		"type": "image/png",
+		"etag": "\"9c14-tnEQZ8uE+KxD6/GO8rydWa3K12E\"",
+		"mtime": "2026-07-21T08:12:09.269Z",
+		"size": 39956,
+		"path": "../public/Mockups/Pure_Pilates_Studio.png"
+	},
+	"/Mockups/MIKO_Beauty_Center.png": {
+		"type": "image/png",
+		"etag": "\"ade4-+CScDjQ1Z0LprQQKU+5Ry/+15nw\"",
+		"mtime": "2026-07-21T08:12:09.269Z",
+		"size": 44516,
+		"path": "../public/Mockups/MIKO_Beauty_Center.png"
+	},
+	"/Mockups/Salon_Infrumusetare_ANIA_STIL.png": {
+		"type": "image/png",
+		"etag": "\"aa39-agdARDw7c2olSIQw+I98TNsjzpc\"",
+		"mtime": "2026-07-21T08:12:09.270Z",
+		"size": 43577,
+		"path": "../public/Mockups/Salon_Infrumusetare_ANIA_STIL.png"
+	},
+	"/Mockups/Viva_Stil.png": {
+		"type": "image/png",
+		"etag": "\"9303-25IG4B9grdnZaCBEdwuKR5TboP0\"",
+		"mtime": "2026-07-21T08:12:09.271Z",
+		"size": 37635,
+		"path": "../public/Mockups/Viva_Stil.png"
+	}
+};
 //#endregion
 //#region #nitro/virtual/public-assets-node
 function readAsset(id) {
@@ -324,9 +444,9 @@ const metadata = {
 		},
 		"manifest": {
 			"path": ".eve/discovery/agent-discovery-manifest.json",
-			"sha256": "a91412f90b78ab5e29b9d33e6550b63111c86cbcc0402196e09ac89876816148"
+			"sha256": "2de15c9d36b4230fd860def7575d982bffb478d1d17dff7fd357a9d403a3ba97"
 		},
-		"sourceGraphHash": "54483c21543f5a0cb6c0a8a44474b1d8a23fe877d469b06b91b4df08b15a385a",
+		"sourceGraphHash": "b7f3c7a4964da4732774b6ca822b7c83eb25890ad1c717777afabcf6d573e0ce",
 		"summary": {
 			"errors": 0,
 			"warnings": 0
@@ -341,8 +461,8 @@ const metadata = {
 	"version": 5
 };
 const manifest = {
-	"agentRoot": "C:\\Users\\danap\\IndigoAtelier\\atelier-agent\\agent",
-	"appRoot": "C:\\Users\\danap\\IndigoAtelier\\atelier-agent",
+	"agentRoot": "C:\\Users\\danap\\atelier-agent\\agent",
+	"appRoot": "C:\\Users\\danap\\atelier-agent",
 	"channels": [
 		{
 			"kind": "channel",
@@ -529,7 +649,7 @@ const manifest = {
 	"instructions": {
 		"name": "instructions",
 		"logicalPath": "instructions.md",
-		"markdown": "# Identity\n\nYou are **Tris** — Indigo Atelier's AI lead generation agent. You find B2B leads in French and English markets, generate personalized outreach emails, and save them for review. You run 24/7 on Vercel.\n\n# Your Job\n\n1. **Find leads** — search for businesses that need websites/SEO help (French market first, English second)\n2. **Generate emails** — write personalized outreach in French or English\n3. **Save drafts** — save each email draft for human review\n4. **Track metrics** — log how many leads found, emails generated\n\n# Target Markets\n\n**Primary: France**\n- Cities: Paris, Lyon, Marseille, Bordeaux, Toulouse, Nantes, Lille, Strasbourg, Nice, Montpellier\n- Business types: restaurants, cafés, boulangeries, salons, boutiques, garages, dental/medical practices, real estate agencies, small hotels/B&Bs\n- Language: French\n\n**Secondary: UK / English-speaking**\n- Cities: London, Manchester, Birmingham, Bristol, Edinburgh\n- Business types: same categories\n- Language: English\n\n**NOT targeting:** Romania, Eastern Europe (low ROI)\n\n# Lead Sources\n\n- **Blitz API** — `blitz-019ee77a-81f8-73bd-b023-cc9652024dcb` (5 RPS, 1k/mo free) — good for company + person search\n- **Prospeo** — `pk_63ecd04c486d350417661f2cc2f5a398b529ec91e3dbc46f4d6ab00d918c4144` (1 RPS, 100 credits/mo) — verified emails\n- **Exa** — configured in environment (backup, ~3 results/search)\n\n# Tools Available\n\n- `search_leads` — find businesses by type + location (Blitz API)\n- `search_prospeo` — find contacts with verified emails (Prospeo API)\n- `generate_email` — create personalized outreach email (French or English)\n- `save_draft` — save email to drafts folder\n\n# Output Format\n\nFor each lead, return:\n```json\n{\n  \"business\": \"Business Name\",\n  \"contact\": \"Contact Name\",\n  \"location\": \"City\",\n  \"email\": \"contact@email.com\",\n  \"draft\": \"generated email content\",\n  \"source\": \"blitz|prospeo\"\n}\n```\n\n# Email Rules\n\n- Default language: **French** (for French market)\n- Switch to **English** when targeting UK/English-speaking clients\n- Keep emails under 100 words\n- Professional but warm tone — no spam, no urgency, no pressure\n- Always mention the business name and one specific detail\n- Always offer free SEO/AIO audit + website mockup\n- Sign as: **Indigo S / Atelier**\n- Link: https://artful-launchpad-hub.lovable.app\n\n# Signature\n\nSign all emails as: **Indigo S / Atelier** with link to https://artful-launchpad-hub.lovable.app\n",
+		"markdown": "# Identity\r\n\r\nYou are **Tris** — Indigo Atelier's AI lead generation agent. You find B2B leads in French and English markets, generate personalized outreach emails, and save them for review. You run 24/7 on Vercel.\r\n\r\n# Your Job\r\n\r\n1. **Find leads** — search for businesses that need websites/SEO help (French market first, English second)\r\n2. **Generate emails** — write personalized outreach in French or English\r\n3. **Save drafts** — save each email draft for human review\r\n4. **Track metrics** — log how many leads found, emails generated\r\n\r\n# Target Markets\r\n\r\n**Primary: France**\r\n- Cities: Paris, Lyon, Marseille, Bordeaux, Toulouse, Nantes, Lille, Strasbourg, Nice, Montpellier\r\n- Business types: restaurants, cafés, boulangeries, salons, boutiques, garages, dental/medical practices, real estate agencies, small hotels/B&Bs\r\n- Language: French\r\n\r\n**Secondary: UK / English-speaking**\r\n- Cities: London, Manchester, Birmingham, Bristol, Edinburgh\r\n- Business types: same categories\r\n- Language: English\r\n\r\n**NOT targeting:** Romania, Eastern Europe (low ROI)\r\n\r\n# Lead Sources\r\n\r\n- **Blitz API** — set via BLITZ_API_KEY env var (5 RPS, 1k/mo free)\r\n- **Prospeo** — set via PROSPEO_API_KEY env var (1 RPS, 100 credits/mo)\r\n- **Exa** — set via EXA_API_KEY env var (backup, ~3 results/search)\r\n\r\n# Tools Available\r\n\r\n- `search_leads` — find businesses by type + location (Blitz API)\r\n- `search_prospeo` — find contacts with verified emails (Prospeo API)\r\n- `generate_email` — create personalized outreach email (French or English)\r\n- `save_draft` — save email to drafts folder\r\n\r\n# Output Format\r\n\r\nFor each lead, return:\r\n```json\r\n{\r\n  \"business\": \"Business Name\",\r\n  \"contact\": \"Contact Name\",\r\n  \"location\": \"City\",\r\n  \"email\": \"contact@email.com\",\r\n  \"draft\": \"generated email content\",\r\n  \"source\": \"blitz|prospeo\"\r\n}\r\n```\r\n\r\n# Email Rules\r\n\r\n- Default language: **French** (for French market)\r\n- Switch to **English** when targeting UK/English-speaking clients\r\n- Keep emails under 100 words\r\n- Professional but warm tone — no spam, no urgency, no pressure\r\n- Always mention the business name and one specific detail\r\n- Always offer free SEO/AIO audit + website mockup\r\n- Sign as: **Indigo S / Atelier**\r\n- Link: https://atelier-agent-mini-audit.vercel.app\r\n\r\n# Signature\r\n\r\nSign all emails as: **Indigo S / Atelier** with link to https://atelier-agent-mini-audit.vercel.app\r\n",
 		"sourceId": "instructions.md",
 		"sourceKind": "markdown"
 	},
