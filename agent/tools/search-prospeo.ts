@@ -15,7 +15,7 @@ export default defineTool({
     const query = input.query as string;
     const location = input.location as string;
     const max_results = Math.min((input.max_results as number) || 5, 25);
-    const PROSPEO_KEY = process.env.PROSPEO_API_KEY;
+    const PROSPEO_KEY = process.env.prospeo_api_key;
     if (!PROSPEO_KEY) return { error: "PROSPEO_API_KEY not set", leads: [], count: 0 };
 
     try {

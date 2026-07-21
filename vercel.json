@@ -2,9 +2,5 @@
   "version": 2,
   "buildCommand": "npx eve build",
   "outputDirectory": ".eve",
-  "framework": null,
-  "env": {
-    "BLITZ_API_KEY": "@blitz-api-key",
-    "PROSPEO_API_KEY": "@prospeo-api-key"
-  }
+  "framework": null
 }

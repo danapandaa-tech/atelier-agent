@@ -15,7 +15,7 @@ export default defineTool({
     const query = input.query as string;
     const location = (input.location as string) || "Paris";
     const max_results = (input.max_results as number) || 5;
-    const BLITZ_KEY = process.env.BLITZ_API_KEY;
+    const BLITZ_KEY = process.env.blitz_api_key;
     if (!BLITZ_KEY) return { error: "BLITZ_API_KEY not set", leads: [], count: 0 };
 
     try {
