@@ -320,7 +320,7 @@ const allowsEval = cached(() => {
 		return false;
 	}
 });
-function isPlainObject(o) {
+function isPlainObject$1(o) {
 	if (isObject(o) === false) return false;
 	const ctor = o.constructor;
 	if (ctor === void 0) return true;
@@ -398,7 +398,7 @@ function omit(schema, mask) {
 	});
 }
 function extend(schema, shape) {
-	if (!isPlainObject(shape)) throw new Error("Invalid input to extend: expected a plain object");
+	if (!isPlainObject$1(shape)) throw new Error("Invalid input to extend: expected a plain object");
 	return clone(schema, {
 		...schema._zod.def,
 		get shape() {
@@ -1824,7 +1824,7 @@ function mergeValues$1(a, b) {
 		valid: true,
 		data: a
 	};
-	if (isPlainObject(a) && isPlainObject(b)) {
+	if (isPlainObject$1(a) && isPlainObject$1(b)) {
 		const bKeys = Object.keys(b);
 		const sharedKeys = Object.keys(a).filter((key) => bKeys.indexOf(key) !== -1);
 		const newObj = {
@@ -1883,7 +1883,7 @@ const $ZodRecord = /*@__PURE__*/ $constructor("$ZodRecord", (inst, def) => {
 	$ZodType.init(inst, def);
 	inst._zod.parse = (payload, ctx) => {
 		const input = payload.value;
-		if (!isPlainObject(input)) {
+		if (!isPlainObject$1(input)) {
 			payload.issues.push({
 				expected: "record",
 				code: "invalid_type",
@@ -3647,14 +3647,14 @@ function object(shape, params) {
 		...normalizeParams(params)
 	});
 }
-function strictObject(shape, params) {
+function looseObject(shape, params) {
 	return new ZodObject$1({
 		type: "object",
 		get shape() {
 			assignProp(this, "shape", { ...shape });
 			return this.shape;
 		},
-		catchall: never(),
+		catchall: unknown(),
 		...normalizeParams(params)
 	});
 }
@@ -7451,8 +7451,8 @@ var ZodFirstPartyTypeKind;
 	ZodFirstPartyTypeKind["ZodPipeline"] = "ZodPipeline";
 	ZodFirstPartyTypeKind["ZodReadonly"] = "ZodReadonly";
 })(ZodFirstPartyTypeKind || (ZodFirstPartyTypeKind = {}));
-const stringType = ZodString.create;
-const numberType = ZodNumber.create;
+ZodString.create;
+ZodNumber.create;
 ZodNaN.create;
 ZodBigInt.create;
 ZodBoolean.create;
@@ -7464,10 +7464,10 @@ ZodAny.create;
 ZodUnknown.create;
 ZodNever.create;
 ZodVoid.create;
-const arrayType = ZodArray.create;
-const objectType = ZodObject.create;
+ZodArray.create;
+ZodObject.create;
 ZodObject.strictCreate;
-const unionType = ZodUnion.create;
+ZodUnion.create;
 ZodDiscriminatedUnion.create;
 ZodIntersection.create;
 ZodTuple.create;
@@ -7477,7 +7477,7 @@ ZodSet.create;
 ZodFunction.create;
 ZodLazy.create;
 ZodLiteral.create;
-const enumType = ZodEnum.create;
+ZodEnum.create;
 ZodNativeEnum.create;
 ZodPromise.create;
 ZodEffects.create;
@@ -7717,15 +7717,8 @@ function combineHeaders(...headers) {
 		...currentHeaders != null ? currentHeaders : {}
 	}), {});
 }
-var { btoa: btoa$1, atob: atob$1 } = globalThis;
-function convertBase64ToUint8Array(base64String) {
-	const latin1string = atob$1(base64String.replace(/-/g, "+").replace(/_/g, "/"));
-	return Uint8Array.from(latin1string, (byte) => byte.codePointAt(0));
-}
-function convertUint8ArrayToBase64(array) {
-	let latin1string = "";
-	for (let i = 0; i < array.length; i++) latin1string += String.fromCodePoint(array[i]);
-	return btoa$1(latin1string);
+function removeUndefinedEntries(record) {
+	return Object.fromEntries(Object.entries(record).filter(([_key, value]) => value != null));
 }
 async function delay(delayInMs, options) {
 	if (delayInMs == null) return Promise.resolve();
@@ -7752,6 +7745,96 @@ async function delay(delayInMs, options) {
 }
 function createAbortError() {
 	return new DOMException("Delay was aborted", "AbortError");
+}
+function getWebSocketConstructor(webSocket) {
+	const WebSocketConstructor = webSocket != null ? webSocket : globalThis.WebSocket;
+	if (WebSocketConstructor == null) throw new Error("No WebSocket implementation available.");
+	return WebSocketConstructor;
+}
+var textDecoder = new TextDecoder();
+async function readWebSocketMessageText(data) {
+	if (typeof data === "string") return data;
+	if (data instanceof ArrayBuffer) return textDecoder.decode(data);
+	if (ArrayBuffer.isView(data)) return textDecoder.decode(data);
+	if (typeof Blob !== "undefined" && data instanceof Blob) return data.text();
+	return String(data);
+}
+var WEBSOCKET_OPEN_STATE = 1;
+async function waitForWebSocketBufferDrain(socket, { highWaterMark = 1024 * 1024, pollIntervalMs = 20, abortSignal } = {}) {
+	var _a2;
+	while (socket.readyState === WEBSOCKET_OPEN_STATE && ((_a2 = socket.bufferedAmount) != null ? _a2 : 0) > highWaterMark) {
+		if ((abortSignal == null ? void 0 : abortSignal.aborted) === true) return;
+		await delay(pollIntervalMs);
+	}
+}
+function connectToWebSocket({ url, protocols, headers, webSocket, abortSignal, onOpen, onMessageText, onProcessingError, onSocketError, onClose, onAbort }) {
+	var _a2;
+	let socket;
+	let abortListener;
+	const close = (code) => {
+		if (abortListener != null) {
+			abortSignal?.removeEventListener("abort", abortListener);
+			abortListener = void 0;
+		}
+		try {
+			socket?.close(code);
+		} catch (e) {}
+	};
+	if (abortSignal == null ? void 0 : abortSignal.aborted) {
+		onAbort?.((_a2 = abortSignal.reason) != null ? _a2 : /* @__PURE__ */ new Error("Aborted"));
+		return {
+			socket: void 0,
+			close
+		};
+	}
+	try {
+		socket = new (getWebSocketConstructor(webSocket))(url, protocols, { headers: removeUndefinedEntries(headers != null ? headers : {}) });
+	} catch (error) {
+		onProcessingError(error);
+		return {
+			socket: void 0,
+			close
+		};
+	}
+	if (abortSignal != null && onAbort != null) {
+		abortListener = () => {
+			var _a3;
+			return onAbort((_a3 = abortSignal.reason) != null ? _a3 : /* @__PURE__ */ new Error("Aborted"));
+		};
+		abortSignal.addEventListener("abort", abortListener, { once: true });
+	}
+	const openedSocket = socket;
+	socket.onopen = () => {
+		try {
+			onOpen?.(openedSocket);
+		} catch (error) {
+			onProcessingError(error);
+		}
+	};
+	let tail = Promise.resolve();
+	socket.onmessage = (event) => {
+		tail = tail.then(() => readWebSocketMessageText(event.data)).then((text) => onMessageText(text)).catch(onProcessingError);
+	};
+	socket.onerror = () => {
+		tail = tail.then(() => onSocketError == null ? void 0 : onSocketError()).catch(onProcessingError);
+	};
+	socket.onclose = () => {
+		tail = tail.then(() => onClose == null ? void 0 : onClose()).catch(onProcessingError);
+	};
+	return {
+		socket,
+		close
+	};
+}
+var { btoa: btoa$1, atob: atob$1 } = globalThis;
+function convertBase64ToUint8Array(base64String) {
+	const latin1string = atob$1(base64String.replace(/-/g, "+").replace(/_/g, "/"));
+	return Uint8Array.from(latin1string, (byte) => byte.codePointAt(0));
+}
+function convertUint8ArrayToBase64(array) {
+	let latin1string = "";
+	for (let i = 0; i < array.length; i++) latin1string += String.fromCodePoint(array[i]);
+	return btoa$1(latin1string);
 }
 var DelayedPromise = class {
 	constructor() {
@@ -8107,6 +8190,40 @@ var DownloadError = class extends (_b$1 = AISDKError, _a$1 = symbol$1, _b$1) {
 function isBrowserRuntime(globalThisAny = globalThis) {
 	return globalThisAny.window != null;
 }
+function isSameOrigin(url, baseUrl) {
+	try {
+		return new URL(url).origin === new URL(baseUrl).origin;
+	} catch (e) {
+		return false;
+	}
+}
+var BLOCKED_REQUEST_HEADERS = [
+	"connection",
+	"keep-alive",
+	"te",
+	"trailer",
+	"transfer-encoding",
+	"upgrade",
+	"host",
+	"forwarded",
+	"proxy-authorization",
+	"via",
+	"x-forwarded-for",
+	"x-forwarded-host",
+	"x-forwarded-proto",
+	"x-real-ip",
+	"metadata",
+	"metadata-flavor",
+	"x-aws-ec2-metadata-token",
+	"x-metadata-token",
+	"cookie",
+	"set-cookie"
+];
+function sanitizeRequestHeaders(input) {
+	const headers = new Headers(input);
+	for (const name2 of BLOCKED_REQUEST_HEADERS) headers.delete(name2);
+	return headers;
+}
 function validateDownloadUrl(url) {
 	let parsed;
 	try {
@@ -8163,9 +8280,12 @@ function isPrivateIPv4(ip) {
 	if (a === 169 && b === 254) return true;
 	if (a === 172 && b >= 16 && b <= 31) return true;
 	if (a === 192 && b === 0 && c === 0) return true;
+	if (a === 192 && b === 0 && c === 2) return true;
 	if (a === 192 && b === 168) return true;
 	if (a === 198 && (b === 18 || b === 19)) return true;
-	if (a >= 240) return true;
+	if (a === 198 && b === 51 && c === 100) return true;
+	if (a === 203 && b === 0 && c === 113) return true;
+	if (a >= 224) return true;
 	return false;
 }
 function parseIPv6(ip) {
@@ -8215,34 +8335,49 @@ function isPrivateIPv6(ip) {
 	if ((groups[0] & 65472) === 65152) return true;
 	if ((groups[0] & 65472) === 65216) return true;
 	if ((groups[0] & 65280) === 65280) return true;
+	if (groups[0] === 8193 && groups[1] === 3512) return true;
+	if (groups[0] === 16383 && (groups[1] & 61440) === 0) return true;
 	if (topZero(6) || topZero(5) && groups[5] === 65535 || topZero(4) && groups[4] === 65535 && groups[5] === 0 || groups[0] === 100 && groups[1] === 65435 && groups[2] === 0 && groups[3] === 0 && groups[4] === 0 && groups[5] === 0 || groups[0] === 100 && groups[1] === 65435 && groups[2] === 1) return isPrivateIPv4(`${groups[6] >> 8 & 255}.${groups[6] & 255}.${groups[7] >> 8 & 255}.${groups[7] & 255}`);
 	return false;
 }
 var MAX_DOWNLOAD_REDIRECTS = 10;
-async function fetchWithValidatedRedirects({ url, headers, abortSignal, maxRedirects = MAX_DOWNLOAD_REDIRECTS }) {
-	const baseInit = { signal: abortSignal };
-	if (headers !== void 0) baseInit.headers = headers;
+var REDIRECT_STATUS_CODES = /* @__PURE__ */ new Set([
+	301,
+	302,
+	303,
+	307,
+	308
+]);
+async function fetchWithValidatedRedirects({ url, headers, abortSignal, maxRedirects = MAX_DOWNLOAD_REDIRECTS, fetch = globalThis.fetch, trustedOrigin }) {
+	let currentHeaders = headers === void 0 ? void 0 : sanitizeRequestHeaders(headers);
+	const perHopInit = (redirect) => {
+		const init = {
+			signal: abortSignal,
+			redirect
+		};
+		if (currentHeaders !== void 0) init.headers = new Headers(currentHeaders);
+		return init;
+	};
 	let currentUrl = url;
 	for (let redirectCount = 0; redirectCount <= maxRedirects; redirectCount++) {
-		validateDownloadUrl(currentUrl);
-		const response = await fetch(currentUrl, {
-			...baseInit,
-			redirect: "manual"
-		});
+		if (trustedOrigin === void 0 || !isSameOrigin(currentUrl, trustedOrigin)) validateDownloadUrl(currentUrl);
+		const response = await fetch(currentUrl, perHopInit("manual"));
 		if (response.type === "opaqueredirect") {
 			if (!isBrowserRuntime()) throw new DownloadError({
 				url,
 				message: `Redirect from ${currentUrl} could not be validated and was blocked`
 			});
-			return await fetch(currentUrl, {
-				...baseInit,
-				redirect: "follow"
-			});
+			return await fetch(currentUrl, perHopInit("follow"));
 		}
 		const location = response.headers.get("location");
-		if (response.status >= 300 && response.status < 400 && location) {
+		if (REDIRECT_STATUS_CODES.has(response.status) && location) {
 			await cancelResponseBody(response);
-			currentUrl = new URL(location, currentUrl).toString();
+			const nextUrl = new URL(location, currentUrl).toString();
+			if (currentHeaders !== void 0 && !isSameOrigin(nextUrl, currentUrl)) {
+				const userAgent = currentHeaders.get("user-agent");
+				currentHeaders = new Headers(userAgent == null ? void 0 : { "user-agent": userAgent });
+			}
+			currentUrl = nextUrl;
 			continue;
 		}
 		return response;
@@ -8383,11 +8518,18 @@ function withUserAgentSuffix(headers, ...userAgentSuffixParts) {
 	return Object.fromEntries(normalizedHeaders.entries());
 }
 var getOriginalFetch = () => globalThis.fetch;
-var getFromApi = async ({ url, headers = {}, successfulResponseHandler, failedResponseHandler, abortSignal, fetch: fetch2 = getOriginalFetch() }) => {
+var getFromApi = async ({ url, headers = {}, successfulResponseHandler, failedResponseHandler, abortSignal, fetch = getOriginalFetch(), validateUrl, credentialedOrigin, trustedOrigin }) => {
 	try {
-		const response = await fetch2(url, {
+		const requestHeaders = withUserAgentSuffix(credentialedOrigin !== void 0 && !isSameOrigin(url, credentialedOrigin) ? {} : headers, `ai-sdk/provider-utils/5.0.11`, getRuntimeEnvironmentUserAgent());
+		const response = validateUrl ? await fetchWithValidatedRedirects({
+			url,
+			headers: requestHeaders,
+			abortSignal,
+			fetch,
+			trustedOrigin
+		}) : await fetch(url, {
 			method: "GET",
-			headers: withUserAgentSuffix(headers, `ai-sdk/provider-utils/5.0.0-beta.49`, getRuntimeEnvironmentUserAgent()),
+			headers: requestHeaders,
 			signal: abortSignal
 		});
 		const responseHeaders = extractResponseHeaders(response);
@@ -9442,7 +9584,10 @@ function asSchema(schema) {
 	}) : isSchema(schema) ? schema : "~standard" in schema ? schema["~standard"].vendor === "zod" ? zodSchema(schema) : standardSchema(schema) : schema();
 }
 function standardSchema(standardSchema2) {
-	return jsonSchema(() => addAdditionalPropertiesToJsonSchema(standardSchema2["~standard"].jsonSchema.input({ target: "draft-07" })), { validate: async (value) => {
+	return jsonSchema(() => {
+		if (!hasStandardJsonSchema(standardSchema2)) throw new Error(`Standard schema vendor '${standardSchema2["~standard"].vendor}' does not support JSON Schema conversion.`);
+		return addAdditionalPropertiesToJsonSchema(standardSchema2["~standard"].jsonSchema.input({ target: "draft-07" }));
+	}, { validate: async (value) => {
 		const result = await standardSchema2["~standard"].validate(value);
 		return "value" in result ? {
 			success: true,
@@ -9455,6 +9600,9 @@ function standardSchema(standardSchema2) {
 			})
 		};
 	} });
+}
+function hasStandardJsonSchema(schema) {
+	return schema["~standard"].jsonSchema != null;
 }
 function zod3Schema(zodSchema2, options) {
 	var _a2;
@@ -9592,7 +9740,7 @@ function parseJsonEventStream({ stream, schema }) {
 	} }));
 }
 var getOriginalFetch2 = () => globalThis.fetch;
-var postJsonToApi = async ({ url, headers, body, failedResponseHandler, successfulResponseHandler, abortSignal, fetch: fetch2 }) => await postToApi({
+var postJsonToApi = async ({ url, headers, body, failedResponseHandler, successfulResponseHandler, abortSignal, fetch }) => await postToApi({
 	url,
 	headers: {
 		"Content-Type": "application/json",
@@ -9605,13 +9753,13 @@ var postJsonToApi = async ({ url, headers, body, failedResponseHandler, successf
 	failedResponseHandler,
 	successfulResponseHandler,
 	abortSignal,
-	fetch: fetch2
+	fetch
 });
-var postToApi = async ({ url, headers = {}, body, successfulResponseHandler, failedResponseHandler, abortSignal, fetch: fetch2 = getOriginalFetch2() }) => {
+var postToApi = async ({ url, headers = {}, body, successfulResponseHandler, failedResponseHandler, abortSignal, fetch = getOriginalFetch2() }) => {
 	try {
-		const response = await fetch2(url, {
+		const response = await fetch(url, {
 			method: "POST",
-			headers: withUserAgentSuffix(headers, `ai-sdk/provider-utils/5.0.0-beta.49`, getRuntimeEnvironmentUserAgent()),
+			headers: withUserAgentSuffix(headers, `ai-sdk/provider-utils/5.0.11`, getRuntimeEnvironmentUserAgent()),
 			body: body.content,
 			signal: abortSignal
 		});
@@ -9685,8 +9833,64 @@ async function resolve(value) {
 	if (typeof value === "function") value = value();
 	return Promise.resolve(value);
 }
+var retryWithExponentialBackoff = ({ maxRetries = 2, initialDelayInMs = 2e3, backoffFactor = 2, abortSignal, shouldRetry, getDelayInMs = ({ exponentialBackoffDelay }) => exponentialBackoffDelay, createRetryError = ({ message }) => new Error(message) }) => async (f) => retryWithExponentialBackoffInternal(f, {
+	maxRetries,
+	delayInMs: initialDelayInMs,
+	backoffFactor,
+	abortSignal,
+	shouldRetry,
+	getDelayInMs,
+	createRetryError
+});
+async function retryWithExponentialBackoffInternal(f, { maxRetries, delayInMs, backoffFactor, abortSignal, shouldRetry, getDelayInMs, createRetryError }, errors = []) {
+	try {
+		return await f();
+	} catch (error) {
+		if (isAbortError(error)) throw error;
+		if (maxRetries === 0) throw error;
+		const errorMessage = getErrorMessage(error);
+		const newErrors = [...errors, error];
+		const tryNumber = newErrors.length;
+		if (tryNumber > maxRetries) throw createRetryError({
+			message: `Failed after ${tryNumber} attempts. Last error: ${errorMessage}`,
+			reason: "maxRetriesExceeded",
+			errors: newErrors
+		});
+		if (await shouldRetry(error) && tryNumber <= maxRetries) {
+			await delay(getDelayInMs({
+				error,
+				exponentialBackoffDelay: delayInMs
+			}), { abortSignal });
+			return retryWithExponentialBackoffInternal(f, {
+				maxRetries,
+				delayInMs: backoffFactor * delayInMs,
+				backoffFactor,
+				abortSignal,
+				shouldRetry,
+				getDelayInMs,
+				createRetryError
+			}, newErrors);
+		}
+		if (tryNumber === 1) throw error;
+		throw createRetryError({
+			message: `Failed after ${tryNumber} attempts with non-retryable error: '${errorMessage}'`,
+			reason: "errorNotRetryable",
+			errors: newErrors
+		});
+	}
+}
+var textDecoder2 = new TextDecoder();
+async function readResponseBodyAsText({ response, url }) {
+	return textDecoder2.decode(await readResponseWithSizeLimit({
+		response,
+		url
+	}));
+}
 var createJsonErrorResponseHandler = ({ errorSchema, errorToMessage, isRetryable }) => async ({ response, url, requestBodyValues }) => {
-	const responseBody = await response.text();
+	const responseBody = await readResponseBodyAsText({
+		response,
+		url
+	});
 	const responseHeaders = extractResponseHeaders(response);
 	if (responseBody.trim() === "") return {
 		responseHeaders,
@@ -9745,7 +9949,10 @@ var createEventSourceResponseHandler = (chunkSchema) => async ({ response }) => 
 	};
 };
 var createJsonResponseHandler = (responseSchema) => async ({ response, url, requestBodyValues }) => {
-	const responseBody = await response.text();
+	const responseBody = await readResponseBodyAsText({
+		response,
+		url
+	});
 	const parsedResult = await safeParseJSON({
 		text: responseBody,
 		schema: responseSchema
@@ -9791,6 +9998,58 @@ function resolveSync(value) {
 	if (typeof value === "function") next = value();
 	if (next instanceof Promise) throw new Error("Promise returned from resolveSync");
 	return next;
+}
+function parseTranscriptionStreamPart(text) {
+	let value;
+	try {
+		value = secureJsonParse(text);
+	} catch (e) {
+		return;
+	}
+	if (value == null || typeof value !== "object" || Array.isArray(value)) return;
+	const part = value;
+	switch (part.type) {
+		case "stream-start": return Array.isArray(part.warnings) && part.warnings.every(isWarning) ? part : void 0;
+		case "transcript-delta": return isString(part.delta) && isOptional(part.id, isString) && isOptional(part.providerMetadata, isPlainObject) ? part : void 0;
+		case "transcript-partial": return isString(part.text) && isOptional(part.id, isString) && isOptional(part.startSecond, isNumber) && isOptional(part.durationInSeconds, isNumber) && isOptional(part.channelIndex, isNumber) && isOptional(part.providerMetadata, isPlainObject) ? part : void 0;
+		case "transcript-final": return isString(part.text) && isOptional(part.id, isString) && isOptional(part.startSecond, isNumber) && isOptional(part.endSecond, isNumber) && isOptional(part.channelIndex, isNumber) && isOptional(part.providerMetadata, isPlainObject) ? part : void 0;
+		case "finish": return isString(part.text) && Array.isArray(part.segments) && part.segments.every(isSegment) && isOptional(part.language, isString) && isOptional(part.durationInSeconds, isNumber) && isOptional(part.providerMetadata, isPlainObject) ? part : void 0;
+		case "response-metadata": {
+			if (!(isOptional(part.modelId, isString) && isOptional(part.headers, isPlainObject))) return;
+			const timestamp = part.timestamp;
+			if (timestamp == null) return {
+				...part,
+				timestamp: void 0
+			};
+			if (typeof timestamp !== "string") return;
+			const revived = new Date(timestamp);
+			return Number.isNaN(revived.getTime()) ? void 0 : {
+				...part,
+				timestamp: revived
+			};
+		}
+		case "raw": return "rawValue" in part ? part : void 0;
+		case "error": return "error" in part ? part : void 0;
+		default: return;
+	}
+}
+function isString(value) {
+	return typeof value === "string";
+}
+function isNumber(value) {
+	return typeof value === "number";
+}
+function isOptional(value, check) {
+	return value === void 0 || check(value);
+}
+function isPlainObject(value) {
+	return typeof value === "object" && value != null && !Array.isArray(value);
+}
+function isWarning(value) {
+	return isPlainObject(value) && isString(value.type);
+}
+function isSegment(value) {
+	return isPlainObject(value) && isString(value.text) && isNumber(value.startSecond) && isNumber(value.endSecond);
 }
 function withoutTrailingSlash(url) {
 	return url == null ? void 0 : url.replace(/\/$/, "");
@@ -9938,7 +10197,7 @@ var require_get_vercel_oidc_token = /* @__PURE__ */ __commonJSMin(((exports, mod
 			err = error;
 		}
 		try {
-			const [{ getTokenPayload, isExpired }, { refreshToken }] = await Promise.all([await Promise.resolve().then(() => /* @__PURE__ */ __toESM(require_token_util())), await import("../vercel__oidc.mjs").then((n) => /* @__PURE__ */ __toESM(n.t()))]);
+			const [{ getTokenPayload, isExpired }, { refreshToken }] = await Promise.all([await import("../_.mjs").then((m) => /* @__PURE__ */ __toESM(m.default)), await import("../_6.mjs").then((m) => /* @__PURE__ */ __toESM(m.default))]);
 			if (!token || isExpired(getTokenPayload(token), options?.expirationBufferMs)) {
 				await refreshToken(options);
 				token = getVercelOidcTokenSync();
@@ -10429,7 +10688,13 @@ var import_dist = (/* @__PURE__ */ __commonJSMin(((exports, module) => {
 	});
 })))();
 function getGatewayRealtimeProtocols(token, options) {
-	const protocols = ["ai-gateway-realtime.v1", `ai-gateway-auth.${token}`];
+	return buildGatewayProtocols("ai-gateway-realtime.v1", token, options);
+}
+function getGatewayTranscriptionProtocols(token, options) {
+	return buildGatewayProtocols("ai-gateway-transcription.v1", token, options);
+}
+function buildGatewayProtocols(marker11, token, options) {
+	const protocols = [marker11, `ai-gateway-auth.${token}`];
 	if (options == null ? void 0 : options.teamIdOrSlug) protocols.push(`ai-gateway-team.${encodeSubprotocolValue(options.teamIdOrSlug)}`);
 	return protocols;
 }
@@ -10621,9 +10886,10 @@ var GatewayFailedDependencyError = class extends (_b7 = GatewayError, _a7 = symb
 var name7 = "GatewayForbiddenError";
 var marker8 = `vercel.ai.gateway.error.${name7}`;
 var symbol8 = Symbol.for(marker8);
+var forbiddenParamSchema = lazySchema(() => zodSchema(object({ ruleId: string() })));
 var _a8, _b8;
 var GatewayForbiddenError = class extends (_b8 = GatewayError, _a8 = symbol8, _b8) {
-	constructor({ message = "Forbidden", statusCode = 403, cause, generationId } = {}) {
+	constructor({ message = "Forbidden", statusCode = 403, cause, generationId, ruleId } = {}) {
 		super({
 			message,
 			statusCode,
@@ -10633,6 +10899,7 @@ var GatewayForbiddenError = class extends (_b8 = GatewayError, _a8 = symbol8, _b
 		this[_a8] = true;
 		this.name = name7;
 		this.type = "forbidden";
+		this.ruleId = ruleId;
 	}
 	static isInstance(error) {
 		return GatewayError.hasMarker(error) && symbol8 in error;
@@ -10726,12 +10993,19 @@ async function createGatewayErrorFromResponse({ response, statusCode, defaultMes
 			cause,
 			generationId
 		});
-		case "forbidden": return new GatewayForbiddenError({
-			message,
-			statusCode,
-			cause,
-			generationId
-		});
+		case "forbidden": {
+			const ruleResult = await safeValidateTypes({
+				value: validatedResponse.error.param,
+				schema: forbiddenParamSchema
+			});
+			return new GatewayForbiddenError({
+				message,
+				statusCode,
+				cause,
+				generationId,
+				ruleId: ruleResult.success ? ruleResult.value.ruleId : void 0
+			});
+		}
 		default: return new GatewayInternalServerError({
 			message,
 			statusCode,
@@ -10752,7 +11026,7 @@ var gatewayErrorResponseSchema = lazySchema(() => zodSchema(object({
 function extractApiCallResponse(error) {
 	if (error.data !== void 0) return error.data;
 	if (error.responseBody != null) try {
-		return JSON.parse(error.responseBody);
+		return secureJsonParse(error.responseBody);
 	} catch (e) {
 		return error.responseBody;
 	}
@@ -10843,6 +11117,7 @@ var KNOWN_MODEL_TYPES = [
 	"embedding",
 	"image",
 	"language",
+	"realtime",
 	"reranking",
 	"speech",
 	"transcription",
@@ -10856,6 +11131,7 @@ var GatewayFetchMetadata = class {
 		try {
 			const { value } = await getFromApi({
 				url: `${this.config.baseURL}/config`,
+				validateUrl: false,
 				headers: this.config.headers ? await resolve(this.config.headers) : void 0,
 				successfulResponseHandler: createJsonResponseHandler(gatewayAvailableModelsResponseSchema),
 				failedResponseHandler: createJsonErrorResponseHandler({
@@ -10873,6 +11149,7 @@ var GatewayFetchMetadata = class {
 		try {
 			const { value } = await getFromApi({
 				url: `${new URL(this.config.baseURL).origin}/v1/credits`,
+				validateUrl: false,
 				headers: this.config.headers ? await resolve(this.config.headers) : void 0,
 				successfulResponseHandler: createJsonResponseHandler(gatewayCreditsResponseSchema),
 				failedResponseHandler: createJsonErrorResponseHandler({
@@ -10935,6 +11212,7 @@ var GatewaySpendReport = class {
 			if (params.tags && params.tags.length > 0) searchParams.set("tags", params.tags.join(","));
 			const { value } = await getFromApi({
 				url: `${baseUrl.origin}/v1/report?${searchParams.toString()}`,
+				validateUrl: false,
 				headers: this.config.headers ? await resolve(this.config.headers) : void 0,
 				successfulResponseHandler: createJsonResponseHandler(gatewaySpendReportResponseSchema),
 				failedResponseHandler: createJsonErrorResponseHandler({
@@ -10985,6 +11263,7 @@ var GatewayGenerationInfoFetcher = class {
 		try {
 			const { value } = await getFromApi({
 				url: `${new URL(this.config.baseURL).origin}/v1/generation?id=${encodeURIComponent(params.id)}`,
+				validateUrl: false,
 				headers: this.config.headers ? await resolve(this.config.headers) : void 0,
 				successfulResponseHandler: createJsonResponseHandler(gatewayGenerationInfoResponseSchema),
 				failedResponseHandler: createJsonErrorResponseHandler({
@@ -11380,7 +11659,7 @@ var GatewayVideoModel = class {
 	get provider() {
 		return this.config.provider;
 	}
-	async doGenerate({ prompt, n, aspectRatio, resolution, duration, fps, seed, image, providerOptions, headers, abortSignal }) {
+	async doGenerate({ prompt, n, aspectRatio, resolution, duration, fps, seed, generateAudio, image, frameImages, inputReferences, providerOptions, headers, abortSignal }) {
 		var _a11;
 		const resolvedHeaders = this.config.headers ? await resolve(this.config.headers) : void 0;
 		try {
@@ -11395,8 +11674,14 @@ var GatewayVideoModel = class {
 					...duration && { duration },
 					...fps && { fps },
 					...seed && { seed },
+					...generateAudio !== void 0 && { generateAudio },
 					...providerOptions && { providerOptions },
-					...image && { image: maybeEncodeVideoFile(image) }
+					...image && { image: maybeEncodeVideoFile(image) },
+					...frameImages && { frameImages: frameImages.map((frame) => ({
+						...frame,
+						image: maybeEncodeVideoFile(frame.image)
+					})) },
+					...inputReferences && { inputReferences: inputReferences.map((reference) => maybeEncodeVideoFile(reference)) }
 				},
 				successfulResponseHandler: async ({ response, url, requestBodyValues }) => {
 					if (response.body == null) throw new APICallError({
@@ -11742,6 +12027,35 @@ var GatewayTranscriptionModel = class {
 			throw await asGatewayError(error, await parseAuthMethod(resolvedHeaders != null ? resolvedHeaders : {}));
 		}
 	}
+	async doStream(options) {
+		var _a11, _b11, _c, _d, _e;
+		const currentDate = (_c = (_b11 = (_a11 = this.config._internal) == null ? void 0 : _a11.currentDate) == null ? void 0 : _b11.call(_a11)) != null ? _c : /* @__PURE__ */ new Date();
+		const headers = combineHeaders(await resolve((_d = this.config.headers) != null ? _d : {}), (_e = options.headers) != null ? _e : {}, this.getModelConfigHeaders(), await resolve(this.config.o11yHeaders));
+		const authMethod = await parseAuthMethod(headers);
+		const startFrame = {
+			type: "transcription-stream.start",
+			inputAudioFormat: options.inputAudioFormat,
+			...options.providerOptions != null && { providerOptions: options.providerOptions },
+			...options.includeRawChunks != null && { includeRawChunks: options.includeRawChunks }
+		};
+		return {
+			stream: createGatewayTranscriptionStream({
+				webSocket: this.config.webSocket,
+				url: toGatewayTranscriptionUrl(this.config.baseURL, this.modelId),
+				protocols: getProtocolsFromHeaders(headers),
+				headers,
+				startFrame,
+				audio: options.audio,
+				abortSignal: options.abortSignal,
+				authMethod
+			}),
+			request: { body: startFrame },
+			response: {
+				timestamp: currentDate,
+				modelId: this.modelId
+			}
+		};
+	}
 	getUrl() {
 		return `${this.config.baseURL}/transcription-model`;
 	}
@@ -11752,6 +12066,121 @@ var GatewayTranscriptionModel = class {
 		};
 	}
 };
+function toGatewayTranscriptionUrl(baseURL, modelId) {
+	const url = new URL(`${baseURL.replace(/^http/, "ws")}/transcription-model`);
+	url.searchParams.set("ai-model-id", modelId);
+	return url.toString();
+}
+function getProtocolsFromHeaders(headers) {
+	const normalizedHeaders = normalizeHeaders(headers);
+	const authorization = normalizedHeaders.authorization;
+	const token = (authorization == null ? void 0 : authorization.startsWith("Bearer ")) ? authorization.slice(7) : void 0;
+	return token == null ? ["ai-gateway-transcription.v1"] : getGatewayTranscriptionProtocols(token, { teamIdOrSlug: normalizedHeaders[VERCEL_AI_GATEWAY_TEAM_HEADER] });
+}
+var MAX_AUDIO_FRAME_BYTES = 64 * 1024;
+function createGatewayTranscriptionStream({ webSocket, url, protocols, headers, startFrame, audio, abortSignal, authMethod }) {
+	let finished = false;
+	let cleanup = () => {};
+	return new ReadableStream({
+		start: (controller) => {
+			let audioReader;
+			let hasServerErrorPart = false;
+			let lastServerError;
+			let audioStopped = false;
+			let connection;
+			cleanup = (closeCode) => {
+				if (audioReader != null) audioReader.cancel().catch(() => {});
+				else audio.cancel().catch(() => {});
+				connection?.close(closeCode);
+			};
+			const stopAudio = () => {
+				audioStopped = true;
+				if (audioReader != null) {
+					audioReader.cancel().catch(() => {});
+					audioReader = void 0;
+				} else audio.cancel().catch(() => {});
+			};
+			const finishWithError = (error) => {
+				if (finished) return;
+				finished = true;
+				cleanup();
+				errorControllerWithGatewayError(controller, error, authMethod);
+			};
+			const sendAudio = async (socket) => {
+				const reader = audio.getReader();
+				audioReader = reader;
+				try {
+					while (true) {
+						const { done, value } = await reader.read();
+						if (done || finished) break;
+						const bytes = typeof value === "string" ? convertBase64ToUint8Array(value) : value;
+						for (let offset = 0; offset < bytes.length; offset += MAX_AUDIO_FRAME_BYTES) {
+							if (finished) break;
+							socket.send(bytes.subarray(offset, offset + MAX_AUDIO_FRAME_BYTES));
+							await waitForWebSocketBufferDrain(socket);
+						}
+					}
+				} finally {
+					reader.releaseLock();
+					if (audioReader === reader) audioReader = void 0;
+				}
+				if (!finished && !audioStopped) socket.send(JSON.stringify({ type: "transcription-stream.audio-done" }));
+			};
+			connection = connectToWebSocket({
+				url,
+				protocols,
+				headers,
+				webSocket,
+				abortSignal,
+				onAbort: (reason) => {
+					if (finished) return;
+					finished = true;
+					cleanup();
+					controller.error(reason);
+				},
+				onProcessingError: finishWithError,
+				onOpen: (socket) => {
+					socket.send(JSON.stringify(startFrame));
+					sendAudio(socket).catch(finishWithError);
+				},
+				onMessageText: (text) => {
+					if (finished) return;
+					const part = parseTranscriptionStreamPart(text);
+					if (part == null) return;
+					if (part.type === "finish") {
+						finished = true;
+						controller.enqueue(part);
+						controller.close();
+						cleanup(1e3);
+						return;
+					}
+					if (part.type === "error") {
+						hasServerErrorPart = true;
+						lastServerError = part.error;
+						stopAudio();
+					}
+					controller.enqueue(part);
+				},
+				onSocketError: () => {
+					finishWithError(/* @__PURE__ */ new Error("Connection error on AI Gateway transcription stream"));
+				},
+				onClose: () => {
+					if (hasServerErrorPart) {
+						if (finished) return;
+						createErrorFromServerErrorPart(lastServerError, authMethod).then(finishWithError);
+						return;
+					}
+					finishWithError(/* @__PURE__ */ new Error("AI Gateway transcription stream closed before a finish part was received"));
+				}
+			});
+		},
+		cancel: () => {
+			if (finished) return;
+			finished = true;
+			cleanup();
+		}
+	});
+}
 var providerMetadataEntrySchema4 = object({}).catchall(unknown());
 var gatewayTranscriptionWarningSchema = discriminatedUnion("type", [
 	object({
@@ -11786,6 +12215,33 @@ var gatewayTranscriptionResponseSchema = object({
 	warnings: array(gatewayTranscriptionWarningSchema).optional(),
 	providerMetadata: record(string(), providerMetadataEntrySchema4).optional()
 });
+async function errorControllerWithGatewayError(controller, error, authMethod) {
+	controller.error(await asGatewayError(error, authMethod));
+}
+function getServerErrorMessage(error) {
+	if (error != null && typeof error === "object" && "message" in error && typeof error.message === "string") return error.message;
+	return getErrorMessage(error);
+}
+var SERVER_ERROR_STATUS_CODES = {
+	authentication_error: 401,
+	failed_dependency: 424,
+	forbidden: 403,
+	internal_server_error: 500,
+	invalid_request_error: 400,
+	model_not_found: 404,
+	rate_limit_exceeded: 429
+};
+async function createErrorFromServerErrorPart(error, authMethod) {
+	if (typeof error === "object" && error != null && "message" in error && typeof error.message === "string" && "type" in error && typeof error.type === "string" && error.type in SERVER_ERROR_STATUS_CODES) return createGatewayErrorFromResponse({
+		response: { error: {
+			message: error.message,
+			type: error.type
+		} },
+		statusCode: SERVER_ERROR_STATUS_CODES[error.type],
+		authMethod
+	});
+	return /* @__PURE__ */ new Error(`AI Gateway transcription stream failed: ${getServerErrorMessage(error)}`);
+}
 var GatewayRealtimeModel = class {
 	constructor(modelId, config) {
 		this.specificationVersion = "v4";
@@ -11835,35 +12291,141 @@ function toGatewayRealtimeUrl(baseURL, modelId) {
 	url.searchParams.set("ai-model-id", modelId);
 	return url.toString();
 }
+var exaSearchToolFactory = createProviderExecutedToolFactory({
+	id: "gateway.exa_search",
+	inputSchema: lazySchema(() => zodSchema(object({
+		query: string().describe("Natural-language web search query. This is required."),
+		type: _enum([
+			"auto",
+			"fast",
+			"instant"
+		]).optional().describe("Search method. Use auto for the default balance of speed and quality."),
+		num_results: number().optional().describe("Maximum number of results to return (1-100, default: 10)."),
+		category: _enum([
+			"company",
+			"people",
+			"research paper",
+			"news",
+			"personal site",
+			"financial report"
+		]).optional().describe("Optional content category to focus results."),
+		user_location: string().optional().describe("Two-letter ISO country code such as 'US'."),
+		include_domains: array(string()).optional().describe("Only return results from these domains."),
+		exclude_domains: array(string()).optional().describe("Exclude results from these domains."),
+		start_published_date: string().optional().describe("Only return links published after this ISO 8601 date."),
+		end_published_date: string().optional().describe("Only return links published before this ISO 8601 date."),
+		contents: object({
+			text: union([boolean(), object({
+				max_characters: number().optional(),
+				include_html_tags: boolean().optional(),
+				verbosity: _enum([
+					"compact",
+					"standard",
+					"full"
+				]).optional(),
+				include_sections: array(_enum([
+					"header",
+					"navigation",
+					"banner",
+					"body",
+					"sidebar",
+					"footer",
+					"metadata"
+				])).optional(),
+				exclude_sections: array(_enum([
+					"header",
+					"navigation",
+					"banner",
+					"body",
+					"sidebar",
+					"footer",
+					"metadata"
+				])).optional()
+			})]).optional(),
+			highlights: union([boolean(), object({
+				query: string().optional(),
+				max_characters: number().optional()
+			})]).optional(),
+			max_age_hours: number().optional(),
+			livecrawl_timeout: number().optional(),
+			subpages: number().optional(),
+			subpage_target: union([string(), array(string())]).optional(),
+			extras: object({
+				links: number().optional(),
+				image_links: number().optional()
+			}).optional()
+		}).optional().describe("Controls extracted page content and freshness.")
+	}))),
+	outputSchema: lazySchema(() => zodSchema(union([object({
+		requestId: string(),
+		searchType: string().optional(),
+		resolvedSearchType: string().optional(),
+		results: array(object({
+			title: string(),
+			url: string(),
+			id: string(),
+			publishedDate: string().nullable().optional(),
+			author: string().nullable().optional(),
+			image: string().nullable().optional(),
+			favicon: string().nullable().optional(),
+			text: string().optional(),
+			highlights: array(string()).optional(),
+			highlightScores: array(number()).optional(),
+			summary: string().optional(),
+			subpages: array(any()).optional(),
+			extras: object({
+				links: array(string()).optional(),
+				imageLinks: array(string()).optional()
+			}).optional()
+		})),
+		costDollars: object({
+			total: number().optional(),
+			search: record(string(), number()).optional()
+		}).optional()
+	}), object({
+		error: _enum([
+			"api_error",
+			"rate_limit",
+			"timeout",
+			"invalid_input",
+			"configuration_error",
+			"execution_error",
+			"unknown"
+		]),
+		statusCode: number().optional(),
+		message: string()
+	})])))
+});
+var exaSearch = (config = {}) => exaSearchToolFactory(config);
 var parallelSearchToolFactory = createProviderExecutedToolFactory({
 	id: "gateway.parallel_search",
-	inputSchema: lazySchema(() => zodSchema(objectType({
-		objective: stringType().describe("Natural-language description of the web research goal, including source or freshness guidance and broader context from the task. Maximum 5000 characters."),
-		search_queries: arrayType(stringType()).optional().describe("Optional search queries to supplement the objective. Maximum 200 characters per query."),
-		mode: enumType(["one-shot", "agentic"]).optional().describe("Mode preset: \"one-shot\" for comprehensive results with longer excerpts (default), \"agentic\" for concise, token-efficient results for multi-step workflows."),
-		max_results: numberType().optional().describe("Maximum number of results to return (1-20). Defaults to 10 if not specified."),
-		source_policy: objectType({
-			include_domains: arrayType(stringType()).optional().describe("List of domains to include in search results."),
-			exclude_domains: arrayType(stringType()).optional().describe("List of domains to exclude from search results."),
-			after_date: stringType().optional().describe("Only include results published after this date (ISO 8601 format).")
+	inputSchema: lazySchema(() => zodSchema(object({
+		objective: string().describe("Natural-language description of the web research goal, including source or freshness guidance and broader context from the task. Maximum 5000 characters."),
+		search_queries: array(string()).optional().describe("Optional search queries to supplement the objective. Maximum 200 characters per query."),
+		mode: _enum(["one-shot", "agentic"]).optional().describe("Mode preset: \"one-shot\" for comprehensive results with longer excerpts (default), \"agentic\" for concise, token-efficient results for multi-step workflows."),
+		max_results: number().optional().describe("Maximum number of results to return (1-20). Defaults to 10 if not specified."),
+		source_policy: object({
+			include_domains: array(string()).optional().describe("Limit results to these domains. Use plain domain names only — e.g. example.com or sub.example.gov, or a bare extension like .edu. Do not include a scheme, path, or port (e.g. not https://example.com/page)."),
+			exclude_domains: array(string()).optional().describe("Exclude results from these domains. Use plain domain names only — e.g. example.com or sub.example.gov, or a bare extension like .edu. Do not include a scheme, path, or port (e.g. not https://example.com/page)."),
+			after_date: string().optional().describe("Only include results published after this date. Use an ISO 8601 calendar date formatted YYYY-MM-DD (e.g. 2025-01-01); do not include a time.")
 		}).optional().describe("Source policy for controlling which domains to include/exclude and freshness."),
-		excerpts: objectType({
-			max_chars_per_result: numberType().optional().describe("Maximum characters per result."),
-			max_chars_total: numberType().optional().describe("Maximum total characters across all results.")
+		excerpts: object({
+			max_chars_per_result: number().optional().describe("Maximum characters per result."),
+			max_chars_total: number().optional().describe("Maximum total characters across all results.")
 		}).optional().describe("Excerpt configuration for controlling result length."),
-		fetch_policy: objectType({ max_age_seconds: numberType().optional().describe("Maximum age in seconds for cached content. Set to 0 to always fetch fresh content.") }).optional().describe("Fetch policy for controlling content freshness.")
+		fetch_policy: object({ max_age_seconds: number().optional().describe("Maximum age in seconds for cached content. Set to 0 to always fetch fresh content.") }).optional().describe("Fetch policy for controlling content freshness.")
 	}))),
-	outputSchema: lazySchema(() => zodSchema(unionType([objectType({
-		searchId: stringType(),
-		results: arrayType(objectType({
-			url: stringType(),
-			title: stringType(),
-			excerpt: stringType(),
-			publishDate: stringType().nullable().optional(),
-			relevanceScore: numberType().optional()
+	outputSchema: lazySchema(() => zodSchema(union([object({
+		searchId: string(),
+		results: array(object({
+			url: string(),
+			title: string(),
+			excerpt: string(),
+			publishDate: string().nullable().optional(),
+			relevanceScore: number().optional()
 		}))
-	}), objectType({
-		error: enumType([
+	}), object({
+		error: _enum([
 			"api_error",
 			"rate_limit",
 			"timeout",
@@ -11871,55 +12433,63 @@ var parallelSearchToolFactory = createProviderExecutedToolFactory({
 			"configuration_error",
 			"unknown"
 		]),
-		statusCode: numberType().optional(),
-		message: stringType()
+		statusCode: number().optional(),
+		message: string()
 	})])))
 });
 var parallelSearch = (config = {}) => parallelSearchToolFactory(config);
 var perplexitySearchToolFactory = createProviderExecutedToolFactory({
 	id: "gateway.perplexity_search",
-	inputSchema: lazySchema(() => zodSchema(objectType({
-		query: unionType([stringType(), arrayType(stringType())]).describe("Search query (string) or multiple queries (array of up to 5 strings). Multi-query searches return combined results from all queries."),
-		max_results: numberType().optional().describe("Maximum number of search results to return (1-20, default: 10)"),
-		max_tokens_per_page: numberType().optional().describe("Maximum number of tokens to extract per search result page (256-2048, default: 2048)"),
-		max_tokens: numberType().optional().describe("Maximum total tokens across all search results (default: 25000, max: 1000000)"),
-		country: stringType().optional().describe("Two-letter ISO 3166-1 alpha-2 country code for regional search results (e.g., 'US', 'GB', 'FR')"),
-		search_domain_filter: arrayType(stringType()).optional().describe("List of domains to include or exclude from search results (max 20). To include: ['nature.com', 'science.org']. To exclude: ['-example.com', '-spam.net']"),
-		search_language_filter: arrayType(stringType()).optional().describe("List of ISO 639-1 language codes to filter results (max 10, lowercase). Examples: ['en', 'fr', 'de']"),
-		search_after_date: stringType().optional().describe("Include only results published after this date. Format: 'MM/DD/YYYY' (e.g., '3/1/2025'). Cannot be used with search_recency_filter."),
-		search_before_date: stringType().optional().describe("Include only results published before this date. Format: 'MM/DD/YYYY' (e.g., '3/15/2025'). Cannot be used with search_recency_filter."),
-		last_updated_after_filter: stringType().optional().describe("Include only results last updated after this date. Format: 'MM/DD/YYYY' (e.g., '3/1/2025'). Cannot be used with search_recency_filter."),
-		last_updated_before_filter: stringType().optional().describe("Include only results last updated before this date. Format: 'MM/DD/YYYY' (e.g., '3/15/2025'). Cannot be used with search_recency_filter."),
-		search_recency_filter: enumType([
+	inputSchema: lazySchema(() => zodSchema(object({
+		query: union([string(), array(string())]).describe("Search query (string) or multiple queries (array of up to 5 strings). Multi-query searches return combined results from all queries."),
+		max_results: number().optional().describe("Maximum number of search results to return (1-20, default: 10)"),
+		max_tokens_per_page: number().optional().describe("Maximum number of tokens to extract per search result page (256-2048, default: 2048)"),
+		max_tokens: number().optional().describe("Maximum total tokens across all search results (default: 25000, max: 1000000)"),
+		country: string().optional().describe("Two-letter ISO 3166-1 alpha-2 country code for regional search results (e.g., 'US', 'GB', 'FR')"),
+		search_domain_filter: array(string()).optional().describe("List of domains to include or exclude from search results (max 20). To include: ['nature.com', 'science.org']. To exclude: ['-example.com', '-spam.net']"),
+		search_language_filter: array(string()).optional().describe("List of ISO 639-1 language codes to filter results (max 10, lowercase). Examples: ['en', 'fr', 'de']"),
+		search_after_date: string().optional().describe("Include only results published after this date. Format: 'MM/DD/YYYY' (e.g., '3/1/2025'). Cannot be used with search_recency_filter."),
+		search_before_date: string().optional().describe("Include only results published before this date. Format: 'MM/DD/YYYY' (e.g., '3/15/2025'). Cannot be used with search_recency_filter."),
+		last_updated_after_filter: string().optional().describe("Include only results last updated after this date. Format: 'MM/DD/YYYY' (e.g., '3/1/2025'). Cannot be used with search_recency_filter."),
+		last_updated_before_filter: string().optional().describe("Include only results last updated before this date. Format: 'MM/DD/YYYY' (e.g., '3/15/2025'). Cannot be used with search_recency_filter."),
+		search_recency_filter: _enum([
 			"day",
 			"week",
 			"month",
 			"year"
 		]).optional().describe("Filter results by relative time period. Cannot be used with search_after_date or search_before_date.")
 	}))),
-	outputSchema: lazySchema(() => zodSchema(unionType([objectType({
-		results: arrayType(objectType({
-			title: stringType(),
-			url: stringType(),
-			snippet: stringType(),
-			date: stringType().optional(),
-			lastUpdated: stringType().optional()
+	outputSchema: lazySchema(() => zodSchema(union([object({
+		results: array(object({
+			title: string(),
+			url: string(),
+			snippet: string(),
+			date: string().optional(),
+			lastUpdated: string().optional()
 		})),
-		id: stringType()
-	}), objectType({
-		error: enumType([
+		id: string()
+	}), object({
+		error: _enum([
 			"api_error",
 			"rate_limit",
 			"timeout",
 			"invalid_input",
 			"unknown"
 		]),
-		statusCode: numberType().optional(),
-		message: stringType()
+		statusCode: number().optional(),
+		message: string()
 	})])))
 });
 var perplexitySearch = (config = {}) => perplexitySearchToolFactory(config);
 var gatewayTools = {
+	/**
+	* Search the web using Exa for current information and token-efficient
+	* excerpts optimized for agent workflows.
+	*
+	* Supports search type, category, domain, date, location, and content
+	* extraction controls.
+	*/
+	exaSearch,
 	/**
 	* Search the web using Parallel AI's Search API for LLM-optimized excerpts.
 	*
@@ -11960,7 +12530,7 @@ function createGateway(options = {}) {
 		[GATEWAY_AUTH_METHOD_HEADER]: auth.authMethod,
 		...options.teamIdOrSlug != null ? { [VERCEL_AI_GATEWAY_TEAM_HEADER]: options.teamIdOrSlug } : {},
 		...options.headers
-	}, `ai-sdk/gateway/4.0.0-beta.109`);
+	}, `ai-sdk/gateway/4.0.24`);
 	const getHeaders = async () => {
 		try {
 			return createAuthHeaders(await getGatewayAuthToken(options));
@@ -11985,8 +12555,8 @@ function createGateway(options = {}) {
 			});
 		}
 	};
-	const mintRealtimeClientSecret = async (params) => {
-		assertGatewayRealtimeServerEnvironment();
+	const mintClientSecret = async (params) => {
+		assertGatewayClientSecretServerEnvironment();
 		const headers = createAuthHeaders(await getRealtimeAuthToken());
 		const url = new URL("/v1/realtime/client-secrets", baseURL).toString();
 		try {
@@ -11995,6 +12565,7 @@ function createGateway(options = {}) {
 				headers,
 				body: {
 					model: params.modelId,
+					...params.routeKind != null && { routeKind: params.routeKind },
 					...params.expiresAfterSeconds != null && { expiresIn: params.expiresAfterSeconds }
 				},
 				successfulResponseHandler: createJsonResponseHandler(gatewayClientSecretResponseSchema),
@@ -12161,16 +12732,29 @@ function createGateway(options = {}) {
 			baseURL,
 			headers: getHeaders,
 			fetch: options.fetch,
-			o11yHeaders: createO11yHeaders()
+			o11yHeaders: createO11yHeaders(),
+			webSocket: options.webSocket
 		});
 	};
 	provider.transcriptionModel = createTranscriptionModel;
 	provider.transcription = createTranscriptionModel;
+	provider.experimental_transcription = Object.assign((modelId) => createTranscriptionModel(modelId), { getToken: async (tokenOptions) => {
+		const secret = await mintClientSecret({
+			modelId: tokenOptions.model,
+			routeKind: "transcription",
+			...tokenOptions.expiresAfterSeconds != null && { expiresAfterSeconds: tokenOptions.expiresAfterSeconds }
+		});
+		return {
+			token: secret.token,
+			url: toGatewayTranscriptionUrl(baseURL, tokenOptions.model),
+			...secret.expiresAt != null && { expiresAt: secret.expiresAt }
+		};
+	} });
 	const createRealtimeModel = (modelId) => new GatewayRealtimeModel(modelId, {
 		provider: "gateway.realtime",
 		baseURL,
 		teamIdOrSlug: options.teamIdOrSlug,
-		createClientSecret: mintRealtimeClientSecret
+		createClientSecret: mintClientSecret
 	});
 	provider.experimental_realtime = Object.assign((modelId) => createRealtimeModel(modelId), { getToken: async (tokenOptions) => {
 		const { model: modelId, ...secretOptions } = tokenOptions;
@@ -12203,8 +12787,8 @@ async function getGatewayAuthToken(options) {
 		authMethod: "oidc"
 	};
 }
-function assertGatewayRealtimeServerEnvironment() {
-	if (typeof globalThis.window !== "undefined") throw new Error("AI Gateway realtime client secrets must be minted server-side: minting needs your Gateway credential, which must never reach the browser. Call gateway.experimental_realtime.getToken() from your server and pass the returned token to the client.");
+function assertGatewayClientSecretServerEnvironment() {
+	if (typeof globalThis.window !== "undefined") throw new Error("AI Gateway client secrets must be minted server-side: minting needs your Gateway credential, which must never reach the browser. Call gateway.experimental_realtime.getToken() or gateway.experimental_transcription.getToken() from your server and pass the returned token to the client.");
 }
 //#endregion
-export { AISDKError as $, safeParseJSON as A, boolean as B, isFullMediaType as C, lazySchema as D, jsonSchema as E, zodSchema as F, never as G, discriminatedUnion as H, _enum as I, record as J, number as K, _instanceof as L, tool as M, validateTypes as N, readResponseWithSizeLimit as O, withUserAgentSuffix as P, unknown as Q, _null as R, isExecutableTool as S, isUrlSupported as T, lazy as U, custom as V, literal as W, string as X, strictObject as Y, union as Z, fetchWithValidatedRedirects as _, require_token_error as a, isAbortError as b, asArray as c, convertBase64ToUint8Array as d, APICallError as et, convertUint8ArrayToBase64 as f, executeTool as g, detectMediaType as h, require_token_util as i, getErrorMessage as it, safeValidateTypes as j, resolve as k, asSchema as l, delay as m, GatewayError as n, TypeValidationError as nt, DelayedPromise as o, createIdGenerator as p, object as q, gateway as r, UnsupportedFunctionalityError as rt, DownloadError as s, GatewayAuthenticationError as t, InvalidPromptError as tt, cancelResponseBody as u, filterNullable as v, isProviderReference as w, isBuffer as x, getRuntimeEnvironmentUserAgent as y, array as z };
+export { union as $, resolve as A, _null as B, isFullMediaType as C, lazySchema as D, jsonSchema as E, validateTypes as F, lazy as G, boolean as H, withUserAgentSuffix as I, never as J, literal as K, zodSchema as L, safeParseJSON as M, safeValidateTypes as N, parseJsonEventStream as O, tool as P, string as Q, _enum as R, isExecutableTool as S, isUrlSupported as T, custom as U, array as V, discriminatedUnion as W, object as X, number as Y, record as Z, fetchWithValidatedRedirects as _, require_token_util as a, JSONParseError as at, isAbortError as b, DownloadError as c, getErrorMessage as ct, cancelResponseBody as d, unknown as et, convertBase64ToUint8Array as f, executeTool as g, detectMediaType as h, gateway as i, InvalidPromptError as it, retryWithExponentialBackoff as j, readResponseWithSizeLimit as k, asArray as l, createIdGenerator as m, GatewayError as n, APICallError as nt, require_token_error as o, TypeValidationError as ot, convertUint8ArrayToBase64 as p, looseObject as q, createGateway as r, EmptyResponseBodyError as rt, DelayedPromise as s, UnsupportedFunctionalityError as st, GatewayAuthenticationError as t, AISDKError as tt, asSchema as u, filterNullable as v, isProviderReference as w, isBuffer as x, getRuntimeEnvironmentUserAgent as y, _instanceof as z };
