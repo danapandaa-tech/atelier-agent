@@ -12,6 +12,6 @@ const openrouter = createOpenAICompatible({
 });
 
 export default defineAgent({
-  model: openrouter("deepseek/deepseek-chat-v3-0324"),
+  model: openrouter("nvidia/nemotron-3-super-120b-a12b:free"),
   modelContextWindowTokens: 64_000,
 });
